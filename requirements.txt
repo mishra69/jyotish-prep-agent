@@ -1,0 +1,14 @@
+# Agent framework
+langgraph>=0.2
+langgraph-checkpoint-sqlite>=0.2
+langchain-core>=0.3
+langchain-groq>=0.2
+
+# Astro computation
+kerykeion>=4.0
+
+# Frontend
+streamlit>=1.40
+
+# Utilities
+python-dotenv>=1.0

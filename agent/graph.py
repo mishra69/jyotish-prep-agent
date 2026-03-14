@@ -24,7 +24,7 @@ from typing import Literal
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langgraph.graph import StateGraph, END
 from langgraph.types import interrupt
@@ -89,14 +89,15 @@ def llm_call_node(state: AgentState) -> dict:
     Call Claude with current context. Handles both initial synthesis and revisions.
     The LLM may call ask_human if it encounters ambiguous patterns.
     """
-    model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-    api_key = os.getenv("GROQ_API_KEY")
+    model_name = os.getenv("OPENROUTER_MODEL", "anthropic/claude-haiku-4-5")
+    api_key = os.getenv("OPENROUTER_API_KEY")
     log.info("llm_call_node: model=%s api_key_set=%s", model_name, bool(api_key))
 
-    llm = ChatGroq(
+    llm = ChatOpenAI(
         model=model_name,
         temperature=0,
-        groq_api_key=api_key,
+        api_key=api_key,
+        base_url="https://openrouter.ai/api/v1",
     )
     llm_with_tools = llm.bind_tools(SYNTHESIS_TOOLS)
 

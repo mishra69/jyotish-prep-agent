@@ -244,8 +244,11 @@ def show_intake():
                 "human_answers": [],
                 "revision_count": 0,
             }
-            with st.spinner("Computing chart, dasha, and yogas…"):
-                start_graph(initial_state)
+            _ph = st.empty()
+            with _ph:
+                with st.spinner("Computing chart, dasha, and yogas…"):
+                    start_graph(initial_state)
+            _ph.empty()
             st.rerun()
 
 # ── Screen 2: Checkpoint 1 — Prep Review ─────────────────────────────────────
@@ -299,8 +302,11 @@ def show_checkpoint_1():
         _ = col_b.form_submit_button("Cancel", use_container_width=True)
 
     if approved:
-        with st.spinner("Synthesizing consultation brief… (agent may ask you a question)"):
-            resume_graph({"approved": True, "corrections": corrections})
+        _ph = st.empty()
+        with _ph:
+            with st.spinner("Synthesizing consultation brief… (agent may ask you a question)"):
+                resume_graph({"approved": True, "corrections": corrections})
+        _ph.empty()
         st.rerun()
 
 # ── Screen 3: Ask Human ───────────────────────────────────────────────────────
@@ -330,8 +336,11 @@ def show_ask_human():
         if not answer.strip():
             st.error("Please provide an answer.")
         else:
-            with st.spinner("Continuing synthesis…"):
-                resume_graph(answer.strip())
+            _ph = st.empty()
+            with _ph:
+                with st.spinner("Continuing synthesis…"):
+                    resume_graph(answer.strip())
+            _ph.empty()
             st.rerun()
 
 # ── Screen 4: Checkpoint 2 — Draft Review ────────────────────────────────────
@@ -360,10 +369,12 @@ def show_checkpoint_2():
 
     with col_approve:
         if st.button("Approve Final Brief ✓", type="primary", use_container_width=True):
-            with st.spinner("Finalising…"):
-                # Save the (possibly edited) draft, then approve
-                st.session_state.final_brief = edited_draft
-                resume_graph({"approved": True})
+            _ph = st.empty()
+            with _ph:
+                with st.spinner("Finalising…"):
+                    st.session_state.final_brief = edited_draft
+                    resume_graph({"approved": True})
+            _ph.empty()
             st.session_state.final_brief = edited_draft
             st.session_state.stage = "done"
             st.rerun()
@@ -382,9 +393,12 @@ def show_checkpoint_2():
                 if not feedback.strip():
                     st.error("Please describe what you'd like changed.")
                 else:
+                    _ph = st.empty()
+                with _ph:
                     with st.spinner("Revising…"):
                         resume_graph({"approved": False, "feedback": feedback.strip()})
-                    st.rerun()
+                _ph.empty()
+                st.rerun()
 
 # ── Screen 5: Final Brief ─────────────────────────────────────────────────────
 

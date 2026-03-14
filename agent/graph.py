@@ -36,6 +36,7 @@ from agent.prompts import SYNTHESIS_SYSTEM_PROMPT, build_synthesis_message
 
 MAX_REVISIONS = 5
 MAX_ASK_HUMAN = 2   # hard cap on ask_human calls per synthesis
+MAX_LLM_ITERATIONS = 6  # hard cap on llm_call → run_tools cycles
 
 
 # ── Node: compute ─────────────────────────────────────────────────────────────
@@ -98,6 +99,7 @@ def llm_call_node(state: AgentState) -> dict:
         temperature=0,
         api_key=api_key,
         base_url="https://openrouter.ai/api/v1",
+        request_timeout=90,
     )
     llm_with_tools = llm.bind_tools(SYNTHESIS_TOOLS)
 
@@ -247,12 +249,18 @@ def checkpoint_2_node(state: AgentState) -> dict:
 # ── Routing functions ─────────────────────────────────────────────────────────
 
 def route_after_llm(state: AgentState) -> Literal["run_tools", "checkpoint_2"]:
-    """If the LLM made tool calls (and under ask_human cap), execute them. Otherwise checkpoint 2."""
+    """If the LLM made tool calls (and under caps), execute them. Otherwise checkpoint 2."""
     messages = state.get("messages") or []
     last_msg = messages[-1] if messages else None
     ask_human_count = len(state.get("human_answers") or [])
+
+    # Count how many llm→tool cycles have happened (each ToolMessage is one cycle)
+    from langchain_core.messages import ToolMessage
+    tool_iterations = sum(1 for m in messages if isinstance(m, ToolMessage))
+
     if (last_msg and hasattr(last_msg, "tool_calls") and last_msg.tool_calls
-            and ask_human_count < MAX_ASK_HUMAN):
+            and ask_human_count < MAX_ASK_HUMAN
+            and tool_iterations < MAX_LLM_ITERATIONS):
         return "run_tools"
     return "checkpoint_2"
 

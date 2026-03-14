@@ -25,7 +25,9 @@ INITIAL_STATE = {
     "latitude": 12.9716,
     "longitude": 77.5946,
     "timezone": "Asia/Kolkata",
-    "client_topic": "career",
+    "client_topics": ["career"],
+    "custom_topic": "",
+    "client_questions": "",
     "human_answers": [],
     "revision_count": 0,
 }

@@ -17,7 +17,9 @@ class AgentState(TypedDict, total=False):
     latitude: float
     longitude: float
     timezone: str            # IANA, e.g. "Asia/Kolkata"
-    client_topic: str        # "career" | "marriage" | "health" | "general" | free text
+    client_topics: list[str]  # e.g. ["career", "marriage"] — drives TOPIC_FOCUS guidance
+    custom_topic: str         # free-text refinement or "other" topic description
+    client_questions: str     # long-form questions the client brought to the session
 
     # ── Computed (from astro tools) ───────────────────────────────────────────
     birth_chart: dict[str, Any]    # serialized BirthChart

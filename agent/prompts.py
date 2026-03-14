@@ -102,18 +102,38 @@ def build_synthesis_message(state: dict[str, Any]) -> str:
     chart = state.get("birth_chart", {})
     dasha = state.get("dasha_data", {})
     yogas = state.get("yogas", [])
-    topic = state.get("client_topic", "general").lower()
+    # Support both list (new) and string (legacy) topic format
+    raw_topics = state.get("client_topics", state.get("client_topic", "general"))
+    if isinstance(raw_topics, str):
+        topics_list = [raw_topics]
+    else:
+        topics_list = list(raw_topics)
+    topics_list = [t.lower() for t in topics_list if t] or ["general"]
+
+    custom_topic = state.get("custom_topic", "").strip()
+    effective_topic = ", ".join(topics_list)
+    if custom_topic:
+        effective_topic += f" ({custom_topic})"
+
+    client_questions = state.get("client_questions", "").strip()
     corrections = state.get("checkpoint_1_corrections", "").strip()
     feedback = state.get("checkpoint_2_feedback", "").strip()
     revision = state.get("revision_count", 0)
 
-    topic_focus = TOPIC_FOCUS.get(topic, TOPIC_FOCUS["general"])
+    # Combine topic focus guidance for all selected topics (deduplicate if same)
+    seen = set()
+    topic_focus_parts = []
+    for t in topics_list:
+        if t not in seen:
+            seen.add(t)
+            topic_focus_parts.append(TOPIC_FOCUS.get(t, TOPIC_FOCUS["general"]))
+    topic_focus_text = "\n\n".join(topic_focus_parts)
 
     lines = [
         "=== BIRTH CHART DATA ===",
         f"Client: {state.get('client_name', 'Unknown')}",
         f"Born: {state.get('birth_date')} {state.get('birth_time')}, {state.get('birth_place')}",
-        f"Topic: {topic}",
+        f"Topic: {effective_topic}",
         "",
         f"Lagna (Ascendant): {chart.get('lagna')} at {chart.get('lagna_degree', 0):.1f}°",
         f"Moon: {chart.get('moon_sign')} ({chart.get('moon_nakshatra')}, Pada {chart.get('moon_nakshatra_pada')})",
@@ -152,7 +172,13 @@ def build_synthesis_message(state: dict[str, Any]) -> str:
         lines.append(f"             {yoga.get('formation_details')}")
 
     lines.append("")
-    lines.append(topic_focus)
+    lines.append(topic_focus_text)
+
+    if client_questions:
+        lines.append("")
+        lines.append("CLIENT'S SPECIFIC QUESTIONS:")
+        lines.append(client_questions)
+        lines.append("(Address these directly in the SUGGESTED TALKING POINTS section)")
 
     if corrections:
         lines.append("")

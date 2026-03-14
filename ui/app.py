@@ -134,8 +134,15 @@ def _sidebar():
         st.sidebar.caption(f"Session: `{st.session_state.thread_id[:8]}…`")
 
     if st.sidebar.button("↺  New Consultation", use_container_width=True):
-        for k in ["stage", "thread_id", "interrupt_data", "final_brief", "error"]:
-            st.session_state[k] = None if k != "stage" else "intake"
+        clear_none = ["thread_id", "interrupt_data", "final_brief", "error",
+                      "location_candidates", "location_selected"]
+        clear_empty = ["intake_name", "intake_custom_topic", "intake_client_questions",
+                       "intake_location_query"]
+        for k in clear_none:
+            st.session_state[k] = None
+        for k in clear_empty:
+            st.session_state[k] = ""
+        st.session_state["stage"] = "intake"
         st.rerun()
 
 
@@ -169,78 +176,163 @@ def _yoga_list(yogas: list) -> None:
 
 # ── Screen 1: Intake ──────────────────────────────────────────────────────────
 
-COMMON_TIMEZONES = [
-    "Asia/Kolkata", "Asia/Colombo", "Asia/Kathmandu", "Asia/Dhaka",
-    "Asia/Singapore", "Asia/Dubai", "Europe/London", "Europe/Paris",
-    "America/New_York", "America/Chicago", "America/Los_Angeles",
-    "Australia/Sydney", "Pacific/Auckland",
-]
-
 TOPICS = ["career", "marriage", "health", "education", "finance", "general"]
+
+
+def _search_locations(query: str) -> list[dict]:
+    """Return up to 5 candidate locations for the query."""
+    try:
+        from geopy.geocoders import Nominatim
+        from timezonefinder import TimezoneFinder
+        geolocator = Nominatim(user_agent="jyotish-prep-agent/1.0", timeout=10)
+        results = geolocator.geocode(query, language="en", exactly_one=False, limit=5) or []
+        tf = TimezoneFinder()
+        candidates = []
+        for loc in results:
+            tz = tf.timezone_at(lat=loc.latitude, lng=loc.longitude) or "UTC"
+            candidates.append({
+                "address": loc.address,
+                "lat": loc.latitude,
+                "lon": loc.longitude,
+                "timezone": tz,
+            })
+        return candidates
+    except Exception:
+        return []
 
 
 def show_intake():
     st.title("New Consultation")
-    st.caption("Enter client birth details and the primary topic for today's session.")
+    st.caption("Enter client birth details and the consultation topic.")
 
-    with st.form("intake_form"):
-        col1, col2 = st.columns(2)
+    # Without st.form so the location Search button doesn't submit the whole form.
+    # Widget values persist in session_state across reruns naturally.
 
-        with col1:
-            st.subheader("Client")
-            name = st.text_input("Client name", placeholder="e.g. Priya S.")
-            topic = st.selectbox("Consultation topic", TOPICS, index=5)
+    col1, col2 = st.columns(2)
 
-        with col2:
-            st.subheader("Birth details")
-            birth_date = st.date_input(
-                "Date of birth",
-                value=None,
-                min_value=date(1900, 1, 1),
-                max_value=date.today(),
+    with col1:
+        st.subheader("Client")
+        name = st.text_input("Client name (optional)", placeholder="e.g. Priya S.", key="intake_name")
+        topics = st.multiselect(
+            "Consultation topic(s)",
+            TOPICS,
+            default=st.session_state.get("intake_topics", ["general"]),
+            key="intake_topics",
+        )
+        custom_topic = st.text_input(
+            "Custom / refine topic (optional)",
+            placeholder='e.g. "relocation abroad", "job change vs business"',
+            key="intake_custom_topic",
+        )
+        client_questions = st.text_area(
+            "Client's specific questions (optional)",
+            placeholder="e.g. Will I get a promotion this year?\nIs 2025 good for marriage?",
+            height=110,
+            key="intake_client_questions",
+        )
+
+    with col2:
+        st.subheader("Birth details")
+        birth_date = st.date_input(
+            "Date of birth",
+            value=st.session_state.get("intake_birth_date"),
+            min_value=date(1900, 1, 1),
+            max_value=date.today(),
+            format="MM/DD/YYYY",
+            key="intake_birth_date",
+        )
+        st.caption("Time of birth")
+        tc1, tc2, tc3 = st.columns(3)
+        birth_hour = tc1.selectbox(
+            "Hour", list(range(1, 13)), index=11,
+            label_visibility="collapsed", key="intake_hour",
+        )
+        birth_minute = tc2.selectbox(
+            "Minute", [f"{m:02d}" for m in range(60)], index=0,
+            label_visibility="collapsed", key="intake_minute",
+        )
+        birth_ampm = tc3.selectbox(
+            "AM/PM", ["AM", "PM"], index=1,
+            label_visibility="collapsed", key="intake_ampm",
+        )
+
+        # ── Place of birth with candidate search ──────────────────────────────
+        st.write("")
+        lc1, lc2 = st.columns([3, 1])
+        with lc1:
+            location_query = st.text_input(
+                "Place of birth",
+                placeholder="e.g. Chicago, Illinois, USA",
+                key="intake_location_query",
             )
-            birth_time_str = st.text_input("Time of birth (HH:MM, 24h)", placeholder="14:32")
-            birth_place = st.text_input("Place of birth", placeholder="Bangalore")
+        with lc2:
+            st.write("")   # vertical alignment nudge
+            search_clicked = st.button("Search", use_container_width=True, key="location_search_btn")
 
-        st.subheader("Location (for chart calculation)")
-        col3, col4, col5 = st.columns(3)
-        with col3:
-            latitude = st.number_input("Latitude", value=12.9716, format="%.4f", step=0.0001)
-        with col4:
-            longitude = st.number_input("Longitude", value=77.5946, format="%.4f", step=0.0001)
-        with col5:
-            timezone = st.selectbox("Timezone", COMMON_TIMEZONES)
+        if search_clicked:
+            if not location_query.strip():
+                st.warning("Enter a location first.")
+            else:
+                with st.spinner("Searching…"):
+                    candidates = _search_locations(location_query.strip())
+                st.session_state.location_candidates = candidates
+                st.session_state.location_selected = None
 
-        submitted = st.form_submit_button("Compute Chart →", use_container_width=True, type="primary")
+        candidates = st.session_state.get("location_candidates")
+        if candidates is not None:
+            if len(candidates) == 0:
+                st.warning("No locations found — try adding state/country.")
+            else:
+                labels = [c["address"] for c in candidates]
+                chosen = st.radio(
+                    "Pick the right location",
+                    labels,
+                    key="location_radio",
+                    label_visibility="collapsed" if len(candidates) == 1 else "visible",
+                )
+                if chosen:
+                    idx = labels.index(chosen)
+                    st.session_state.location_selected = candidates[idx]
 
-    if submitted:
-        # Validate
+        loc = st.session_state.get("location_selected")
+        if loc:
+            st.caption(
+                f"Lat {loc['lat']:.4f}, Lon {loc['lon']:.4f}"
+                f"  ·  Timezone: **{loc['timezone']}**"
+            )
+
+    st.divider()
+
+    submit = st.button("Compute Chart →", type="primary", use_container_width=True)
+
+    if submit:
+        loc = st.session_state.get("location_selected")
         errors = []
-        if not name.strip():
-            errors.append("Client name is required.")
-        if birth_date is None:
+        if st.session_state.get("intake_birth_date") is None:
             errors.append("Date of birth is required.")
-        try:
-            h, m = birth_time_str.strip().split(":")
-            int(h), int(m)
-        except Exception:
-            errors.append("Birth time must be in HH:MM format (e.g. 14:32).")
-        if not birth_place.strip():
-            errors.append("Place of birth is required.")
+        if not st.session_state.get("intake_topics"):
+            errors.append("Select at least one consultation topic.")
+        if not loc:
+            errors.append("Search and select a birth location.")
 
         if errors:
             for e in errors:
                 st.error(e)
         else:
+            hour_24 = birth_hour % 12 + (12 if birth_ampm == "PM" else 0)
+            birth_time_str = f"{hour_24:02d}:{birth_minute}"
+
             initial_state = {
-                "client_name": name.strip(),
-                "birth_date": birth_date.isoformat(),
-                "birth_time": birth_time_str.strip(),
-                "birth_place": birth_place.strip(),
-                "latitude": latitude,
-                "longitude": longitude,
-                "timezone": timezone,
-                "client_topic": topic,
+                "client_name": name.strip() or "Client",
+                "birth_date": st.session_state["intake_birth_date"].isoformat(),
+                "birth_time": birth_time_str,
+                "birth_place": loc["address"],
+                "latitude": loc["lat"],
+                "longitude": loc["lon"],
+                "timezone": loc["timezone"],
+                "client_topics": st.session_state["intake_topics"],
+                "custom_topic": custom_topic.strip(),
+                "client_questions": client_questions.strip(),
                 "human_answers": [],
                 "revision_count": 0,
             }

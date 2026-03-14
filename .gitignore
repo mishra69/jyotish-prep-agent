@@ -7,3 +7,7 @@ __pycache__/
 *.db-wal
 *.sqlite
 .DS_Store
+
+# Local deploy configs (copy setup_gcp.sh → setup_gcp.local.sh and fill in values)
+deploy/*.local.sh
+deploy/update.sh

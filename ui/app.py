@@ -18,6 +18,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 load_dotenv()
 
+from astro.models import NAKSHATRAS, SIGN_LORDS
+from astro.yogas import EXALTATION, DEBILITATION, OWN_SIGNS, NATURAL_BENEFICS, NATURAL_MALEFICS
+from astro.dasha import NAKSHATRA_LORDS
+
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
@@ -117,6 +121,62 @@ CONFIDENCE_COLOR = {
     "not_formed": "gray",
 }
 
+# ── Planetary table lookup data (derived from astro modules) ──────────────────
+
+_PLANET_ABBR = {
+    "Sun": "Su", "Moon": "Mo", "Mars": "Ma", "Mercury": "Me",
+    "Jupiter": "Ju", "Venus": "Ve", "Saturn": "Sa", "Rahu": "Ra", "Ketu": "Ke",
+}
+_NAK_LORD_ABBR: dict[str, str] = {
+    nak: _PLANET_ABBR[lord.value] for nak, lord in zip(NAKSHATRAS, NAKSHATRA_LORDS)
+}
+_EXALT: dict[str, str]   = {p.value: s.value for p, s in EXALTATION.items()}
+_DEBIT: dict[str, str]   = {p.value: s.value for p, s in DEBILITATION.items()}
+_OWN: dict[str, set]     = {p.value: {s.value for s in signs} for p, signs in OWN_SIGNS.items()}
+_SIGN_LORD: dict[str, str] = {s.value: p.value for s, p in SIGN_LORDS.items()}
+_MALEFICS_SET: set[str]  = {p.value for p in NATURAL_MALEFICS}
+_BENEFICS_SET: set[str]  = {p.value for p in NATURAL_BENEFICS}
+
+# No corresponding source in astro modules — kept here
+_DIG_BALA: dict[str, int] = {
+    "Sun": 10, "Mars": 10, "Jupiter": 1, "Mercury": 1,
+    "Moon": 4, "Venus": 4, "Saturn": 7,
+}
+_COMBUST_ORB: dict[str, float] = {
+    "Mars": 17.0, "Mercury": 14.0, "Jupiter": 11.0,
+    "Venus": 10.0, "Saturn": 15.0,
+}
+_FRIENDS: dict[str, set] = {
+    "Sun": {"Moon", "Mars", "Jupiter"},
+    "Moon": {"Sun", "Mercury"},
+    "Mars": {"Sun", "Moon", "Jupiter"},
+    "Mercury": {"Sun", "Venus"},
+    "Jupiter": {"Sun", "Moon", "Mars"},
+    "Venus": {"Mercury", "Saturn"},
+    "Saturn": {"Mercury", "Venus"},
+    "Rahu": {"Saturn", "Venus", "Mercury"},
+    "Ketu": {"Saturn", "Venus", "Mercury"},
+}
+_ENEMIES: dict[str, set] = {
+    "Sun": {"Venus", "Saturn"},
+    "Moon": set(),
+    "Mars": {"Mercury"},
+    "Mercury": {"Moon"},
+    "Jupiter": {"Mercury", "Venus"},
+    "Venus": {"Sun", "Moon"},
+    "Saturn": {"Sun", "Moon", "Mars"},
+    "Rahu": {"Sun", "Moon", "Mars"},
+    "Ketu": {"Sun", "Moon", "Mars"},
+}
+_SPECIAL_ASPECTS: dict[str, set] = {
+    "Mars": {4, 8}, "Jupiter": {5, 9}, "Saturn": {3, 10},
+}
+_PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+# If True, combustion suppresses retrograde strength (classical view: Sun overwhelms vakri energy).
+# If False, both Retro and Comb appear independently.
+COMBUST_SUPPRESSES_RETRO = True
+
 def _sidebar():
     st.sidebar.title("🪐 Jyotish Prep")
     current = st.session_state.stage
@@ -146,18 +206,154 @@ def _sidebar():
         st.rerun()
 
 
-def _planet_table(planets: dict) -> None:
+def _planet_table(chart: dict) -> None:
+    planets = chart.get("planets", {})
+    houses = chart.get("houses", {})
+
+    sun_abs = planets.get("Sun", {}).get("abs_degree", 0.0)
+    moon_abs = planets.get("Moon", {}).get("abs_degree", 0.0)
+    moon_sun_sep = abs(moon_abs - sun_abs)
+    if moon_sun_sep > 180:
+        moon_sun_sep = 360 - moon_sun_sep
+
+    # planet name → list of house numbers it lords
+    lorded_by: dict[str, list] = {}
+    for h_str, hdata in houses.items():
+        lord = hdata.get("lord", "")
+        lorded_by.setdefault(lord, []).append(int(h_str))
+
+    # planet name → house number
+    planet_house: dict[str, int] = {p: d.get("house", 0) for p, d in planets.items()}
+
+    # house → list of planets aspecting it
+    aspected_by: dict[int, list] = {}
+    for pname, h in planet_house.items():
+        if h == 0:
+            continue
+        asp = {((h - 1 + 6) % 12) + 1}  # 7th house aspect
+        asp |= {((h - 1 + (x - 1)) % 12) + 1 for x in _SPECIAL_ASPECTS.get(pname, set())}
+        for ah in asp:
+            aspected_by.setdefault(ah, []).append(pname)
+
     rows = []
-    for planet, pos in planets.items():
-        retro = "↺" if pos.get("retrograde") else ""
+    for planet_name in _PLANET_ORDER:
+        if planet_name not in planets:
+            continue
+        pos = planets[planet_name]
+        sign = pos.get("sign", "")
+        degree = pos.get("degree", 0.0)
+        house = pos.get("house", 0)
+        nakshatra = pos.get("nakshatra", "")
+        retrograde = pos.get("retrograde", False)
+        abs_deg = pos.get("abs_degree", 0.0)
+
+        # Nakshatra + lord abbreviation
+        nak_lord = _NAK_LORD_ABBR.get(nakshatra, "?")
+        nak_str = f"{nakshatra} ({nak_lord})"
+
+        # ── Strengths & Weaknesses ─────────────────────────────────────────────
+        strengths: list[str] = []
+        weaknesses: list[str] = []
+
+        # Combust check first — it gates retrograde strength
+        combust = False
+        if planet_name == "Moon":
+            if moon_sun_sep >= 170:
+                strengths.append("FM")
+            elif moon_sun_sep <= 10:
+                weaknesses.append("NM")
+        elif planet_name not in ("Sun", "Rahu", "Ketu"):
+            orb = _COMBUST_ORB.get(planet_name, 0.0)
+            sep = abs(abs_deg - sun_abs)
+            if sep > 180:
+                sep = 360 - sep
+            if sep <= orb:
+                combust = True
+                weaknesses.append("Comb")
+
+        if _EXALT.get(planet_name) == sign:
+            strengths.append("Exalt")
+        if sign in _OWN.get(planet_name, set()):
+            strengths.append("Swa")
+        if _DIG_BALA.get(planet_name) == house:
+            strengths.append("Dig")
+        if retrograde and not (combust and COMBUST_SUPPRESSES_RETRO) and planet_name not in ("Rahu", "Ketu"):
+            strengths.append("Retro")
+
+        if _DEBIT.get(planet_name) == sign:
+            weaknesses.append("Deb")
+
+        # ── Score ──────────────────────────────────────────────────────────────
+        s, w = len(strengths), len(weaknesses)
+        net = s - w
+        label = "Exagg." if net >= 1 else ("Dimin." if net <= -1 else "Ord.")
+        score_str = f"+{s} −{w}  {label}"
+
+        # ── Stabilized / Destabilized ──────────────────────────────────────────
+        stabilized: list[str] = []
+        destabilized: list[str] = []
+
+        sign_lord = _SIGN_LORD.get(sign, "")
+        if sign_lord and sign_lord != planet_name:
+            sl_abbr = _PLANET_ABBR[sign_lord]
+            if sign_lord in _FRIENDS.get(planet_name, set()):
+                stabilized.append(f"Frnd({sl_abbr})")
+            elif sign_lord in _ENEMIES.get(planet_name, set()):
+                destabilized.append(f"Enmty({sl_abbr})")
+
+        adj = {((house - 2) % 12) + 1, (house % 12) + 1}
+        fln_ben = [_PLANET_ABBR[p] for p in _BENEFICS_SET if p != planet_name and planet_house.get(p) in adj]
+        fln_mal = [_PLANET_ABBR[p] for p in _MALEFICS_SET if p != planet_name and planet_house.get(p) in adj]
+        if fln_ben:
+            stabilized.append(f"Fln+({','.join(fln_ben)})")
+        if fln_mal:
+            destabilized.append(f"Fln−({','.join(fln_mal)})")
+
+        aspectors = aspected_by.get(house, [])
+        dri_ben = [_PLANET_ABBR[a] for a in aspectors if a in _BENEFICS_SET and a != planet_name]
+        dri_mal = [_PLANET_ABBR[a] for a in aspectors if a in _MALEFICS_SET and a != planet_name]
+        if dri_ben:
+            stabilized.append(f"Dri+({','.join(dri_ben)})")
+        if dri_mal:
+            destabilized.append(f"Dri−({','.join(dri_mal)})")
+
+        co_ben = [_PLANET_ABBR[p] for p in _BENEFICS_SET if p != planet_name and planet_house.get(p) == house]
+        co_mal = [_PLANET_ABBR[p] for p in _MALEFICS_SET if p != planet_name and planet_house.get(p) == house]
+        if co_ben:
+            stabilized.append(f"Co+({','.join(co_ben)})")
+        if co_mal:
+            destabilized.append(f"Co−({','.join(co_mal)})")
+
+        # ── Temporal benefic / malefic ─────────────────────────────────────────
+        lorded = lorded_by.get(planet_name, [])
+        is_tri = any(h in {1, 5, 9} for h in lorded)
+        is_knd = any(h in {1, 4, 7, 10} for h in lorded)
+        is_dth = any(h in {6, 8, 12} for h in lorded)
+
+        lordship_parts = []
+        if is_tri and is_knd:
+            lordship_parts.append("RYK")
+        elif is_tri:
+            lordship_parts.append("Trikona")
+        elif is_knd:
+            lordship_parts.append("Kendra")
+        if is_dth:
+            lordship_parts.append("Dusthana")
+
         rows.append({
-            "Planet": planet,
-            "Sign": pos.get("sign", ""),
-            "House": pos.get("house", ""),
-            "Nakshatra": pos.get("nakshatra", ""),
-            "Pada": pos.get("nakshatra_pada", ""),
-            "R": retro,
+            "Planet": planet_name,
+            "Sign": sign,
+            "Deg": f"{degree:.1f}°",
+            "House": house,
+            "Nakshatra": nak_str,
+            "Strengths": ", ".join(strengths),
+            "Weaknesses": ", ".join(weaknesses),
+            "Score": score_str,
+            "Stabilized": ", ".join(stabilized),
+            "Destabilized": ", ".join(destabilized),
+            "Lordship": " · ".join(lordship_parts),
         })
+
     st.dataframe(rows, use_container_width=True, hide_index=True)
 
 
@@ -365,7 +561,7 @@ def show_checkpoint_1():
     tab_planets, tab_dasha, tab_yogas = st.tabs(["Planetary Positions", "Dasha", "Yogas"])
 
     with tab_planets:
-        _planet_table(chart.get("planets", {}))
+        _planet_table(chart)
 
     with tab_dasha:
         maha = dasha.get("current_mahadasha", {})

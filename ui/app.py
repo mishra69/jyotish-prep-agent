@@ -427,44 +427,39 @@ def _yoga_list(yogas: list) -> None:
 # ── PDF export ────────────────────────────────────────────────────────────────
 
 def _pdf_safe(text: str) -> str:
-    """Coerce text to Latin-1 so fpdf2 built-in fonts don't choke."""
+    """
+    Sanitize a string for fpdf2 built-in (Latin-1) fonts.
+    Replaces every non-Latin-1 character with a safe ASCII equivalent
+    and strips anything that could confuse the renderer.
+    """
     import re as _re
-    t = (
-        text
-        # Dashes
-        .replace("\u2014", "-")    # em dash
-        .replace("\u2013", "-")    # en dash
-        # Arrows — replace with plain dash to avoid fpdf2 bidi misdetection
-        .replace("\u2192", "-")    # → rightwards arrow
-        .replace("\u2190", "-")    # ← leftwards arrow
-        .replace("\u21d2", "-")    # ⇒ double rightwards arrow
+    import unicodedata as _ud
+
+    # 1. Normalize to NFC so composed forms are consistent
+    t = _ud.normalize("NFC", text)
+
+    # 2. Explicit replacements for characters the LLM commonly produces
+    REPLACEMENTS = [
+        # Dashes / arrows — all become a plain hyphen
+        ("\u2014", "-"), ("\u2013", "-"),
+        ("\u2192", "-"), ("\u2190", "-"), ("\u21d2", "-"), ("\u21d0", "-"),
         # Quotes
-        .replace("\u2018", "'")    # left single quote
-        .replace("\u2019", "'")    # right single quote
-        .replace("\u201c", '"')    # left double quote
-        .replace("\u201d", '"')    # right double quote
-        # Ellipsis & dots
-        .replace("\u2026", "...")  # ellipsis
-        .replace("\u00b7", ".")    # middle dot
-        # Yoga / list markers the LLM produces in Jyotish briefs
-        .replace("\u2726", "[+]")  # ✦ confirmed yoga
-        .replace("\u2605", "[+]")  # ★ black star
-        .replace("\u26a0", "(!)")  # ⚠ warning / borderline
-        .replace("\u2717", "[-]")  # ✗ not formed
-        .replace("\u2713", "[v]")  # ✓ checkmark
-        .replace("\u2022", "-")    # • bullet
-        .replace("\u25cf", "-")    # ● black circle
-        # Box-drawing used in brief headers (===)
-        .replace("\u2550", "=")    # ═ double horizontal
-        .replace("\u2500", "-")    # ─ single horizontal
-        # ASCII sequences that confuse fpdf2 bidi
-        .replace("->", "-")
-        .replace("<-", "-")
-        # Whitespace
-        .replace("\u00a0", " ")    # non-breaking space
-    )
-    # Strip markdown bold/italic asterisks that survive from LLM output
-    t = _re.sub(r"\*+", "", t)
+        ("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"'),
+        # Bullets / markers
+        ("\u2022", "-"), ("\u25cf", "-"), ("\u2726", "-"), ("\u2605", "-"),
+        ("\u2717", "-"), ("\u2713", "-"), ("\u26a0", "(!)"),
+        # Box-drawing
+        ("\u2550", "="), ("\u2500", "-"), ("\u2502", "|"),
+        # Misc
+        ("\u2026", "..."), ("\u00b7", "."), ("\u00a0", " "),
+    ]
+    for src, dst in REPLACEMENTS:
+        t = t.replace(src, dst)
+
+    # 3. Strip markdown formatting characters the LLM may still add
+    t = _re.sub(r"[*#`~_]", "", t)
+
+    # 4. Encode to Latin-1; replace any remaining non-Latin-1 chars
     return t.encode("latin-1", errors="replace").decode("latin-1")
 
 
@@ -537,26 +532,19 @@ def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) ->
     pdf.cell(epw, 5, _pdf_safe(client_name), new_x="LMARGIN", new_y="NEXT")
     pdf.ln(5)
 
+    import re as _re
     for line in brief.split("\n"):
-        stripped = line.strip()
-        if not stripped:
+        safe = _pdf_safe(line.strip())
+        if not safe:
             pdf.ln(3)
-        elif stripped.startswith("### "):
+        elif _re.match(r"^[A-Z][A-Z0-9 /|:().-]{2,}:?\s*$", safe):
+            # ALL-CAPS section header (e.g. "KEY YOGAS:", "CURRENT DASHA:")
+            pdf.ln(2)
             pdf.set_font("Helvetica", "B", 11)
-            pdf.multi_cell(epw, 6, _pdf_safe(stripped[4:]))
-            pdf.set_font("Helvetica", "", 10)
-        elif stripped.startswith("## "):
-            pdf.set_font("Helvetica", "B", 12)
-            pdf.multi_cell(epw, 7, _pdf_safe(stripped[3:]))
-            pdf.set_font("Helvetica", "", 10)
-        elif stripped.startswith("# "):
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.multi_cell(epw, 8, _pdf_safe(stripped[2:]))
+            pdf.multi_cell(epw, 6, safe, align="L", new_x="LMARGIN", new_y="NEXT")
             pdf.set_font("Helvetica", "", 10)
         else:
-            pdf.set_font("Helvetica", "", 10)
-            if stripped:
-                pdf.multi_cell(epw, 5, _pdf_safe(stripped))
+            pdf.multi_cell(epw, 5, safe, align="L", new_x="LMARGIN", new_y="NEXT")
 
     return bytes(pdf.output())
 

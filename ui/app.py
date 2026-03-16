@@ -46,6 +46,7 @@ def _init():
         "interrupt_data": None,
         "final_brief": None,
         "error": None,
+        "completed_stages": [],
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -249,6 +250,7 @@ def _sidebar():
         for k in clear_empty:
             st.session_state[k] = ""
         st.session_state["stage"] = "intake"
+        st.session_state["completed_stages"] = []
         st.query_params.clear()
         st.rerun()
 
@@ -417,6 +419,75 @@ def _yoga_list(yogas: list) -> None:
             st.write(yoga.get("description", ""))
             st.caption(yoga.get("formation_details", ""))
 
+# ── Completed-stage read-only summaries ───────────────────────────────────────
+
+def _show_completed_stage(cs: dict) -> None:
+    stage = cs["stage"]
+    data = cs.get("data", {})
+    label = STAGE_LABELS.get(stage, stage)
+
+    with st.expander(f"✓ {label}", expanded=True):
+        if stage == "intake":
+            col1, col2 = st.columns(2)
+            with col1:
+                name = data.get("client_name", "")
+                topics = ", ".join(data.get("client_topics", []))
+                custom = data.get("custom_topic", "")
+                if custom:
+                    topics += f" · {custom}"
+                display_name = name if name and name != "Client" else ""
+                st.write(f"**{display_name}**  {('· ' + topics) if display_name else topics}")
+                questions = data.get("client_questions", "")
+                if questions:
+                    preview = questions[:120] + ("…" if len(questions) > 120 else "")
+                    st.caption(f"*\"{preview}\"*")
+            with col2:
+                st.write(f"{data.get('birth_date', '')}  {data.get('birth_time', '')}")
+                st.caption(data.get("birth_place", ""))
+
+        elif stage == "checkpoint_1":
+            chart = data.get("chart", {})
+            dasha = data.get("dasha_data", {}) or data.get("dasha", {})
+            yogas = data.get("yogas", [])
+            corrections = data.get("corrections", "").strip()
+
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Lagna", f"{chart.get('lagna')} {chart.get('lagna_degree', 0):.1f}°")
+            col2.metric("Moon", f"{chart.get('moon_sign')}")
+            col3.metric("Nakshatra", f"{chart.get('moon_nakshatra')} Pada {chart.get('moon_nakshatra_pada')}")
+
+            tab_planets, tab_dasha, tab_yogas = st.tabs(["Planetary Positions", "Dasha", "Yogas"])
+            with tab_planets:
+                _planet_table(chart)
+            with tab_dasha:
+                maha = dasha.get("current_mahadasha", {})
+                antar = dasha.get("current_antardasha", {})
+                c1, c2 = st.columns(2)
+                c1.metric("Mahadasha", maha.get("planet", ""), delta=f"until {maha.get('end_date', '')[:10]}")
+                c2.metric("Antardasha", antar.get("planet", ""), delta=f"until {antar.get('end_date', '')[:10]}")
+                for t in (dasha.get("next_transitions") or []):
+                    st.write(f"**{t.get('planet')}**  {t.get('start_date','')[:10]} → {t.get('end_date','')[:10]}")
+            with tab_yogas:
+                _yoga_list(yogas)
+
+            if corrections:
+                st.caption(f"Corrections: *{corrections}*")
+
+        elif stage == "ask_human":
+            st.write(f"**Q:** {data.get('question', '')}")
+            st.write(f"**A:** {data.get('answer', '')}")
+
+        elif stage == "checkpoint_2":
+            action = data.get("action", "")
+            saved_draft = data.get("draft", "")
+            if saved_draft:
+                st.text_area("Draft", value=saved_draft, height=300, disabled=True, label_visibility="collapsed")
+            if action == "approved":
+                st.caption("Brief approved.")
+            else:
+                st.caption(f"Revision requested  ·  *{data.get('feedback', '')}*")
+
+
 # ── Screen 1: Intake ──────────────────────────────────────────────────────────
 
 TOPICS = ["career", "marriage", "health", "education", "finance", "general"]
@@ -579,6 +650,18 @@ def show_intake():
                 "human_answers": [],
                 "revision_count": 0,
             }
+            st.session_state.completed_stages.append({
+                "stage": "intake",
+                "data": {
+                    "client_name": initial_state["client_name"],
+                    "birth_date": initial_state["birth_date"],
+                    "birth_time": initial_state["birth_time"],
+                    "birth_place": initial_state["birth_place"],
+                    "client_topics": initial_state["client_topics"],
+                    "custom_topic": initial_state["custom_topic"],
+                    "client_questions": initial_state["client_questions"],
+                },
+            })
             _ph = st.empty()
             with _ph:
                 with st.spinner("Computing chart, dasha, and yogas…"):
@@ -638,6 +721,15 @@ def show_checkpoint_1():
         _ = col_b.form_submit_button("Cancel", use_container_width=True)
 
     if approved:
+        st.session_state.completed_stages.append({
+            "stage": "checkpoint_1",
+            "data": {
+                "corrections": corrections,
+                "chart": chart,
+                "dasha": dasha,
+                "yogas": yogas,
+            },
+        })
         _ph = st.empty()
         with _ph:
             with st.spinner("Synthesizing consultation brief… (agent may ask you a question)"):
@@ -673,6 +765,10 @@ def show_ask_human():
         if not answer.strip():
             st.error("Please provide an answer.")
         else:
+            st.session_state.completed_stages.append({
+                "stage": "ask_human",
+                "data": {"question": question, "answer": answer.strip()},
+            })
             _ph = st.empty()
             with _ph:
                 with st.spinner("Continuing synthesis…"):
@@ -706,6 +802,10 @@ def show_checkpoint_2():
 
     with col_approve:
         if st.button("Approve Final Brief ✓", type="primary", use_container_width=True):
+            st.session_state.completed_stages.append({
+                "stage": "checkpoint_2",
+                "data": {"action": "approved", "draft": edited_draft},
+            })
             _ph = st.empty()
             with _ph:
                 with st.spinner("Finalising…"):
@@ -730,6 +830,10 @@ def show_checkpoint_2():
                 if not feedback.strip():
                     st.error("Please describe what you'd like changed.")
                 else:
+                    st.session_state.completed_stages.append({
+                        "stage": "checkpoint_2",
+                        "data": {"action": "revised", "feedback": feedback.strip(), "draft": draft},
+                    })
                     _ph = st.empty()
                 with _ph:
                     with st.spinner("Revising…"):
@@ -770,6 +874,10 @@ def show_error():
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 _sidebar()
+
+# Render all completed stages as read-only summaries first
+for _cs in st.session_state.get("completed_stages", []):
+    _show_completed_stage(_cs)
 
 stage = st.session_state.stage
 

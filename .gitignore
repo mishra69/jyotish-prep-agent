@@ -10,4 +10,3 @@ __pycache__/
 
 # Local deploy configs (copy setup_gcp.sh → setup_gcp.local.sh and fill in values)
 deploy/*.local.sh
-deploy/update.sh

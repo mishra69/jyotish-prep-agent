@@ -430,35 +430,14 @@ def _pdf_safe(text: str) -> str:
     """Coerce text to Latin-1 so fpdf2 built-in fonts don't choke."""
     return (
         text
-        # Dashes
-        .replace("\u2014", "-")    # em dash —
-        .replace("\u2013", "-")    # en dash –
-        # Arrows  (→ must be replaced before latin-1 encode; it also
-        # triggers fpdf2 bidi detection which right-aligns the line)
-        .replace("\u2192", "->")   # → rightwards arrow
-        .replace("\u2190", "<-")   # ← leftwards arrow
-        .replace("\u21d2", "=>")   # ⇒ double rightwards arrow
-        .replace("\u21d0", "<=")   # ⇐ double leftwards arrow
-        # Quotes
-        .replace("\u2018", "'")    # ' left single quote
-        .replace("\u2019", "'")    # ' right single quote
-        .replace("\u201c", '"')    # " left double quote
-        .replace("\u201d", '"')    # " right double quote
-        # Ellipsis & dots
-        .replace("\u2026", "...")  # … ellipsis
-        .replace("\u00b7", ".")    # · middle dot
-        # Box-drawing chars used in brief header/footer (═══)
-        .replace("\u2550", "=")    # ═ double horizontal
-        .replace("\u2500", "-")    # ─ single horizontal
-        .replace("\u2502", "|")    # │ single vertical
-        # Yoga / list markers used in brief template
-        .replace("\u2726", "*")    # ✦ black four pointed star (confirmed yoga)
-        .replace("\u26a0", "(!)")  # ⚠ warning sign (borderline yoga)
-        .replace("\u2717", "x")    # ✗ ballot x (not formed yoga)
-        .replace("\u2022", "-")    # • bullet
-        .replace("\u25cf", "-")    # ● black circle
-        # Whitespace
-        .replace("\u00a0", " ")    # non-breaking space
+        .replace("\u2014", "-")    # em dash
+        .replace("\u2013", "-")    # en dash
+        .replace("\u2018", "'")    # left single quote
+        .replace("\u2019", "'")    # right single quote
+        .replace("\u201c", '"')    # left double quote
+        .replace("\u201d", '"')    # right double quote
+        .replace("\u2026", "...")  # ellipsis
+        .replace("\u00b7", ".")    # middle dot (used in birth_info separator)
         .encode("latin-1", errors="replace").decode("latin-1")
     )
 

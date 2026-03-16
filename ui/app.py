@@ -695,7 +695,7 @@ def show_done():
     st.success("Brief approved. Ready for your consultation.")
 
     brief = st.session_state.final_brief or ""
-    st.text_area("", value=brief, height=600, key="final_brief_view", disabled=False)
+    st.text_area("Brief", value=brief, height=600, key="final_brief_view", disabled=False, label_visibility="collapsed")
 
     col1, col2 = st.columns(2)
     col1.download_button(

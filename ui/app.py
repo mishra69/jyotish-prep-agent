@@ -255,7 +255,8 @@ def _sidebar():
         st.rerun()
 
 
-def _planet_table(chart: dict) -> None:
+def _planet_rows(chart: dict) -> list[dict]:
+    """Build the planetary data rows list from a chart dict (shared by table + PDF)."""
     planets = chart.get("planets", {})
     houses = chart.get("houses", {})
 
@@ -403,7 +404,11 @@ def _planet_table(chart: dict) -> None:
             "Lordship": " · ".join(lordship_parts),
         })
 
-    st.dataframe(rows, use_container_width=True, hide_index=True)
+    return rows
+
+
+def _planet_table(chart: dict) -> None:
+    st.dataframe(_planet_rows(chart), use_container_width=True, hide_index=True)
 
 
 def _yoga_list(yogas: list) -> None:
@@ -418,6 +423,119 @@ def _yoga_list(yogas: list) -> None:
         with st.expander(f":{color}[{icon}] {yoga.get('name')}"):
             st.write(yoga.get("description", ""))
             st.caption(yoga.get("formation_details", ""))
+
+# ── PDF export ────────────────────────────────────────────────────────────────
+
+def _pdf_safe(text: str) -> str:
+    """Coerce text to Latin-1 so fpdf2 built-in fonts don't choke."""
+    return (
+        text
+        .replace("\u2014", "-")    # em dash
+        .replace("\u2013", "-")    # en dash
+        .replace("\u2018", "'")    # left single quote
+        .replace("\u2019", "'")    # right single quote
+        .replace("\u201c", '"')    # left double quote
+        .replace("\u201d", '"')    # right double quote
+        .replace("\u2026", "...")  # ellipsis
+        .replace("\u00b7", ".")    # middle dot (used in birth_info separator)
+        .encode("latin-1", errors="replace").decode("latin-1")
+    )
+
+
+_PDF_COLS = ["Planet", "Sign", "Deg", "House", "Nakshatra",
+             "Strengths", "Weaknesses", "Score", "Stabilized", "Destabilized", "Lordship"]
+# Widths in mm for landscape A4 (273 mm usable)
+_PDF_COL_W = (18, 22, 12, 12, 38, 22, 22, 28, 35, 35, 29)
+
+
+def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) -> bytes:
+    import re
+    from fpdf import FPDF
+
+    rows = _planet_rows(chart)
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # ── Page 1: Planets table (landscape) ────────────────────────────────────
+    pdf.add_page(orientation="L")
+    epw = pdf.epw  # effective page width (page width minus margins)
+
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.cell(epw, 8, _pdf_safe(f"Jyotish Consultation - {client_name}"), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 9)
+    pdf.cell(epw, 5, _pdf_safe(birth_info), new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(2)
+
+    lagna_str = f"Lagna: {chart.get('lagna', '')} {chart.get('lagna_degree', 0):.1f}°"
+    moon_str  = f"Moon: {chart.get('moon_sign', '')}"
+    nak_str   = f"Nakshatra: {chart.get('moon_nakshatra', '')} Pada {chart.get('moon_nakshatra_pada', '')}"
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.cell(epw, 5, _pdf_safe(f"{lagna_str}  .  {moon_str}  .  {nak_str}"), new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
+
+    pdf.set_font("Helvetica", "B", 10)
+    pdf.cell(epw, 6, "Planetary Positions", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(2)
+
+    # Scale column widths proportionally to fill epw exactly
+    scale = epw / sum(_PDF_COL_W)
+    col_w = [w * scale for w in _PDF_COL_W]
+    row_h = 5
+
+    # Header row
+    pdf.set_font("Helvetica", "B", 7)
+    pdf.set_x(pdf.l_margin)
+    for i, col in enumerate(_PDF_COLS):
+        pdf.cell(col_w[i], row_h, col, border="B")
+    pdf.ln()
+
+    # Data rows
+    pdf.set_font("Helvetica", "", 7)
+    for r in rows:
+        pdf.set_x(pdf.l_margin)
+        for i, col in enumerate(_PDF_COLS):
+            val = _pdf_safe(str(r.get(col, "")))
+            # Truncate to fit: ~1.5 mm per char at 7pt Helvetica
+            max_chars = max(3, int(col_w[i] / 1.5))
+            if len(val) > max_chars:
+                val = val[: max_chars - 1] + "."
+            pdf.cell(col_w[i], row_h, val, border="B")
+        pdf.ln()
+
+    # ── Page 2: Final brief (portrait) ───────────────────────────────────────
+    pdf.add_page(orientation="P")
+    epw = pdf.epw
+
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.cell(epw, 8, "Consultation Brief", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 9)
+    pdf.cell(epw, 5, _pdf_safe(client_name), new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+
+    for line in brief.split("\n"):
+        stripped = line.strip()
+        if not stripped:
+            pdf.ln(3)
+        elif stripped.startswith("### "):
+            pdf.set_font("Helvetica", "B", 11)
+            pdf.multi_cell(epw, 6, _pdf_safe(stripped[4:]))
+            pdf.set_font("Helvetica", "", 10)
+        elif stripped.startswith("## "):
+            pdf.set_font("Helvetica", "B", 12)
+            pdf.multi_cell(epw, 7, _pdf_safe(stripped[3:]))
+            pdf.set_font("Helvetica", "", 10)
+        elif stripped.startswith("# "):
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.multi_cell(epw, 8, _pdf_safe(stripped[2:]))
+            pdf.set_font("Helvetica", "", 10)
+        else:
+            pdf.set_font("Helvetica", "", 10)
+            plain = re.sub(r"\*{1,3}(.*?)\*{1,3}", r"\1", stripped)
+            if plain:
+                pdf.multi_cell(epw, 5, _pdf_safe(plain))
+
+    return bytes(pdf.output())
+
 
 # ── Completed-stage read-only summaries ───────────────────────────────────────
 
@@ -850,7 +968,24 @@ def show_done():
     brief = st.session_state.final_brief or ""
     st.text_area("Brief", value=brief, height=600, key="final_brief_view", disabled=False, label_visibility="collapsed")
 
-    col1, col2 = st.columns(2)
+    # Gather chart + client info for PDF
+    intake_cs = next((cs for cs in st.session_state.completed_stages if cs["stage"] == "intake"), None)
+    cp1_cs    = next((cs for cs in st.session_state.completed_stages if cs["stage"] == "checkpoint_1"), None)
+    chart       = cp1_cs["data"]["chart"] if cp1_cs else {}
+    client_name = intake_cs["data"]["client_name"] if intake_cs else "Client"
+    birth_info  = (
+        f"{intake_cs['data']['birth_date']}  {intake_cs['data']['birth_time']}"
+        f"  -  {intake_cs['data']['birth_place']}"
+    ) if intake_cs else ""
+
+    try:
+        pdf_bytes = _generate_pdf(chart, brief, client_name, birth_info)
+        pdf_ok = True
+    except Exception as _e:
+        pdf_ok = False
+        pdf_err = str(_e)
+
+    col1, col2, col3 = st.columns(3)
     col1.download_button(
         label="Download as .txt",
         data=brief,
@@ -858,7 +993,17 @@ def show_done():
         mime="text/plain",
         use_container_width=True,
     )
-    if col2.button("Copy to clipboard (select all)", use_container_width=True):
+    if pdf_ok:
+        col2.download_button(
+            label="Download as PDF",
+            data=pdf_bytes,
+            file_name="consultation_brief.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+    else:
+        col2.error(f"PDF error: {pdf_err}")
+    if col3.button("Copy to clipboard (select all)", use_container_width=True):
         st.info("Click inside the text area above and press Cmd+A / Ctrl+A to select all, then copy.")
 
 # ── Error screen ──────────────────────────────────────────────────────────────

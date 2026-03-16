@@ -428,18 +428,44 @@ def _yoga_list(yogas: list) -> None:
 
 def _pdf_safe(text: str) -> str:
     """Coerce text to Latin-1 so fpdf2 built-in fonts don't choke."""
-    return (
+    import re as _re
+    t = (
         text
+        # Dashes
         .replace("\u2014", "-")    # em dash
         .replace("\u2013", "-")    # en dash
+        # Arrows — replace with plain dash to avoid fpdf2 bidi misdetection
+        .replace("\u2192", "-")    # → rightwards arrow
+        .replace("\u2190", "-")    # ← leftwards arrow
+        .replace("\u21d2", "-")    # ⇒ double rightwards arrow
+        # Quotes
         .replace("\u2018", "'")    # left single quote
         .replace("\u2019", "'")    # right single quote
         .replace("\u201c", '"')    # left double quote
         .replace("\u201d", '"')    # right double quote
+        # Ellipsis & dots
         .replace("\u2026", "...")  # ellipsis
-        .replace("\u00b7", ".")    # middle dot (used in birth_info separator)
-        .encode("latin-1", errors="replace").decode("latin-1")
+        .replace("\u00b7", ".")    # middle dot
+        # Yoga / list markers the LLM produces in Jyotish briefs
+        .replace("\u2726", "[+]")  # ✦ confirmed yoga
+        .replace("\u2605", "[+]")  # ★ black star
+        .replace("\u26a0", "(!)")  # ⚠ warning / borderline
+        .replace("\u2717", "[-]")  # ✗ not formed
+        .replace("\u2713", "[v]")  # ✓ checkmark
+        .replace("\u2022", "-")    # • bullet
+        .replace("\u25cf", "-")    # ● black circle
+        # Box-drawing used in brief headers (===)
+        .replace("\u2550", "=")    # ═ double horizontal
+        .replace("\u2500", "-")    # ─ single horizontal
+        # ASCII sequences that confuse fpdf2 bidi
+        .replace("->", "-")
+        .replace("<-", "-")
+        # Whitespace
+        .replace("\u00a0", " ")    # non-breaking space
     )
+    # Strip markdown bold/italic asterisks that survive from LLM output
+    t = _re.sub(r"\*+", "", t)
+    return t.encode("latin-1", errors="replace").decode("latin-1")
 
 
 _PDF_COLS = ["Planet", "Sign", "Deg", "House", "Nakshatra",
@@ -449,7 +475,6 @@ _PDF_COL_W = (18, 22, 12, 12, 38, 22, 22, 28, 35, 35, 29)
 
 
 def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) -> bytes:
-    import re
     from fpdf import FPDF
 
     rows = _planet_rows(chart)
@@ -530,9 +555,8 @@ def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) ->
             pdf.set_font("Helvetica", "", 10)
         else:
             pdf.set_font("Helvetica", "", 10)
-            plain = re.sub(r"\*+", "", stripped)
-            if plain:
-                pdf.multi_cell(epw, 5, _pdf_safe(plain))
+            if stripped:
+                pdf.multi_cell(epw, 5, _pdf_safe(stripped))
 
     return bytes(pdf.output())
 

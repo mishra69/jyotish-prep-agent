@@ -53,6 +53,52 @@ def _init():
 
 _init()
 
+
+def _restore_from_url():
+    """Restore session from ?t= query param (survives hard refresh / network switch)."""
+    t = st.query_params.get("t")
+    if not t or st.session_state.thread_id:
+        return  # Nothing to restore, or session already active
+
+    try:
+        graph = get_graph()
+        config = {"configurable": {"thread_id": t}}
+        graph_state = graph.get_state(config)
+
+        if not graph_state or not graph_state.values:
+            return  # Thread not found in DB
+
+        st.session_state.thread_id = t
+
+        # Look for a pending interrupt
+        idata = None
+        for task in (graph_state.tasks or []):
+            for intr in (getattr(task, "interrupts", None) or []):
+                idata = intr.value if hasattr(intr, "value") else intr
+                break
+            if idata:
+                break
+
+        if idata:
+            itype = idata.get("type") if isinstance(idata, dict) else ""
+            st.session_state.interrupt_data = idata
+            st.session_state.stage = {
+                "checkpoint_1": "checkpoint_1",
+                "ask_human": "ask_human",
+                "checkpoint_2": "checkpoint_2",
+            }.get(itype, "error")
+        elif not graph_state.next:
+            # Graph ran to completion
+            st.session_state.stage = "done"
+            st.session_state.final_brief = (graph_state.values or {}).get("draft_brief", "")
+        # else: graph mid-run (shouldn't happen) — leave as intake
+
+    except Exception:
+        pass  # Silently fall through to intake
+
+
+_restore_from_url()
+
 # ── Graph helpers ─────────────────────────────────────────────────────────────
 
 def _advance(input_data):
@@ -203,6 +249,7 @@ def _sidebar():
         for k in clear_empty:
             st.session_state[k] = ""
         st.session_state["stage"] = "intake"
+        st.query_params.clear()
         st.rerun()
 
 
@@ -537,6 +584,7 @@ def show_intake():
                 with st.spinner("Computing chart, dasha, and yogas…"):
                     start_graph(initial_state)
             _ph.empty()
+            st.query_params["t"] = st.session_state.thread_id
             st.rerun()
 
 # ── Screen 2: Checkpoint 1 — Prep Review ─────────────────────────────────────

@@ -665,6 +665,7 @@ def show_ask_human():
             "Your answer",
             placeholder="e.g. This is not a formed yoga — Jupiter is too weak. Proceed without it.",
             height=120,
+            key=f"ask_human_answer_{abs(hash(question)) % 1_000_000}",
         )
         submitted = st.form_submit_button("Submit Answer →", type="primary", use_container_width=True)
 

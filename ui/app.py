@@ -224,6 +224,49 @@ _PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn",
 # If False, both Retro and Comb appear independently.
 COMBUST_SUPPRESSES_RETRO = True
 
+@st.cache_data(ttl=60)
+def _get_credit_status() -> dict | None:
+    """Fetch OpenRouter credit balance. Cached for 60s. Returns None on failure."""
+    import requests
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        return None
+    try:
+        r = requests.get(
+            "https://openrouter.ai/api/v1/auth/key",
+            headers={"Authorization": f"Bearer {api_key}"},
+            timeout=5,
+        )
+        if r.status_code == 200:
+            data = r.json().get("data", {})
+            usage = float(data.get("usage", 0))
+            limit = data.get("limit")   # None = unlimited / prepaid
+            return {"usage": usage, "limit": float(limit) if limit is not None else None}
+    except Exception:
+        pass
+    return None
+
+
+# OpenRouter model menu — label → model ID
+# Only models with reliable tool-calling support are included.
+OPENROUTER_MODELS = {
+    # ── Anthropic ──────────────────────────────────────────────────────────────
+    "Claude Haiku 4.5  (fast · cheap)":        "anthropic/claude-haiku-4-5",
+    "Claude Sonnet 4.5  (balanced)":           "anthropic/claude-sonnet-4-5",
+    "Claude Opus 4.5  (most capable)":         "anthropic/claude-opus-4-5",
+    # ── OpenAI ────────────────────────────────────────────────────────────────
+    "GPT-4o mini  (fast · cheap)":             "openai/gpt-4o-mini",
+    "GPT-4o  (balanced)":                      "openai/gpt-4o",
+    # ── Google ────────────────────────────────────────────────────────────────
+    "Gemini 2.0 Flash  (fast · cheap)":        "google/gemini-2.0-flash-001",
+    "Gemini 1.5 Pro  (balanced)":              "google/gemini-pro-1.5",
+    # ── Meta / open-source ────────────────────────────────────────────────────
+    "Llama 3.3 70B  (open source · balanced)": "meta-llama/llama-3.3-70b-instruct",
+    "DeepSeek V3  (open source · cheap)":      "deepseek/deepseek-chat",
+}
+_DEFAULT_MODEL_LABEL = "Claude Haiku 4.5  (fast · cheap)"
+
+
 def _sidebar():
     st.sidebar.title("🪐 Jyotish Prep")
     current = st.session_state.stage
@@ -240,6 +283,36 @@ def _sidebar():
     if st.session_state.thread_id:
         st.sidebar.caption(f"Session: `{st.session_state.thread_id[:8]}…`")
 
+    st.sidebar.divider()
+    credit = _get_credit_status()
+    if credit is not None:
+        limit = credit["limit"]
+        usage = credit["usage"]
+        if limit is None:
+            st.sidebar.caption(f"Credits: unlimited  (used ${usage:.2f})")
+        else:
+            remaining = limit - usage
+            if remaining <= 0:
+                st.sidebar.error("No credits remaining. Top up at openrouter.ai/credits")
+            elif remaining < 1.0:
+                st.sidebar.warning(f"Credits low: ${remaining:.2f} remaining")
+            else:
+                st.sidebar.caption(f"Credits: ${remaining:.2f} remaining")
+
+    st.sidebar.caption("Model (via OpenRouter)")
+    selected_label = st.sidebar.selectbox(
+        "Model",
+        options=list(OPENROUTER_MODELS.keys()),
+        index=list(OPENROUTER_MODELS.keys()).index(_DEFAULT_MODEL_LABEL),
+        key="selected_model_label",
+        label_visibility="collapsed",
+        disabled=st.session_state.stage != "intake",
+    )
+    st.session_state["llm_model"] = OPENROUTER_MODELS[selected_label]
+    if st.session_state.stage != "intake":
+        st.sidebar.caption(f"`{st.session_state['llm_model']}`")
+
+    st.sidebar.divider()
     if st.sidebar.button("↺  New Consultation", use_container_width=True):
         clear_none = ["thread_id", "interrupt_data", "final_brief", "error",
                       "location_candidates", "location_selected"]
@@ -779,6 +852,7 @@ def show_intake():
                 "client_questions": client_questions.strip(),
                 "human_answers": [],
                 "revision_count": 0,
+                "llm_model": st.session_state.get("llm_model", OPENROUTER_MODELS[_DEFAULT_MODEL_LABEL]),
             }
             st.session_state.completed_stages.append({
                 "stage": "intake",
@@ -1021,8 +1095,13 @@ def show_done():
 # ── Error screen ──────────────────────────────────────────────────────────────
 
 def show_error():
-    st.error("Something went wrong.")
-    st.code(st.session_state.error or "Unknown error")
+    err = st.session_state.error or "Unknown error"
+    if "OPENROUTER_OUT_OF_CREDITS" in err:
+        st.error("Your OpenRouter account has run out of credits.")
+        st.info("Top up at [openrouter.ai/credits](https://openrouter.ai/credits) then start a new consultation.")
+    else:
+        st.error("Something went wrong.")
+        st.code(err)
     if st.button("Start over"):
         for k in ["stage", "thread_id", "interrupt_data", "final_brief", "error"]:
             st.session_state[k] = None if k != "stage" else "intake"

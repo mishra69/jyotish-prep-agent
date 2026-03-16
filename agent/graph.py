@@ -90,7 +90,7 @@ def llm_call_node(state: AgentState) -> dict:
     Call Claude with current context. Handles both initial synthesis and revisions.
     The LLM may call ask_human if it encounters ambiguous patterns.
     """
-    model_name = os.getenv("OPENROUTER_MODEL", "anthropic/claude-haiku-4-5")
+    model_name = state.get("llm_model") or os.getenv("OPENROUTER_MODEL", "anthropic/claude-haiku-4-5")
     api_key = os.getenv("OPENROUTER_API_KEY")
     log.info("llm_call_node: model=%s api_key_set=%s", model_name, bool(api_key))
 
@@ -136,6 +136,12 @@ def llm_call_node(state: AgentState) -> dict:
                 # Model can't handle tool calling — disable and retry immediately
                 log.warning("llm_call_node: tool calling failed (model may not support it), retrying without tools")
                 use_tools = False
+            elif "402" in err or "insufficient" in err.lower() or "billing" in err.lower() or "no credits" in err.lower():
+                log.error("llm_call_node: out of credits — %s", err)
+                raise RuntimeError(
+                    "OPENROUTER_OUT_OF_CREDITS: Your OpenRouter account has insufficient credits. "
+                    "Please top up at openrouter.ai/credits."
+                )
             elif ("429" in err or "rate" in err.lower() or "quota" in err.lower()) and attempt < max_retries - 1:
                 wait = 2 ** attempt * 5   # 5s, 10s, 20s, 40s
                 log.warning("llm_call_node: 429 rate limit, retrying in %ds (attempt %d/%d)",

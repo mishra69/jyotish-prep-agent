@@ -43,3 +43,4 @@ class AgentState(TypedDict, total=False):
 
     # ── Control ───────────────────────────────────────────────────────────────
     revision_count: int            # number of revisions so far
+    llm_model: str                 # OpenRouter model ID chosen at intake

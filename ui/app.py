@@ -539,7 +539,7 @@ def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) ->
 
 # ── Completed-stage read-only summaries ───────────────────────────────────────
 
-def _show_completed_stage(cs: dict) -> None:
+def _show_completed_stage(cs: dict, idx: int = 0) -> None:
     stage = cs["stage"]
     data = cs.get("data", {})
     label = STAGE_LABELS.get(stage, stage)
@@ -599,7 +599,7 @@ def _show_completed_stage(cs: dict) -> None:
             action = data.get("action", "")
             saved_draft = data.get("draft", "")
             if saved_draft:
-                st.text_area("Draft", value=saved_draft, height=300, disabled=True, label_visibility="collapsed")
+                st.text_area("Draft", value=saved_draft, height=300, disabled=True, label_visibility="collapsed", key=f"completed_draft_{idx}")
             if action == "approved":
                 st.caption("Brief approved.")
             else:
@@ -1021,8 +1021,8 @@ def show_error():
 _sidebar()
 
 # Render all completed stages as read-only summaries first
-for _cs in st.session_state.get("completed_stages", []):
-    _show_completed_stage(_cs)
+for _i, _cs in enumerate(st.session_state.get("completed_stages", [])):
+    _show_completed_stage(_cs, _i)
 
 stage = st.session_state.stage
 

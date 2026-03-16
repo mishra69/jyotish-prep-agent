@@ -105,12 +105,13 @@ def llm_call_node(state: AgentState) -> dict:
 
     messages = list(state.get("messages") or [])
 
-    if not messages:
-        # First synthesis call — build the full context message
+    if not messages or not isinstance(messages[0], SystemMessage):
+        # First call or continuation after tool use / revision — always prepend
+        # system prompt + chart context so the LLM never loses its grounding.
         messages = [
             SystemMessage(content=SYNTHESIS_SYSTEM_PROMPT),
             HumanMessage(content=build_synthesis_message(state)),
-        ]
+        ] + messages
 
     log.info("llm_call_node: sending %d messages to LLM", len(messages))
     import time

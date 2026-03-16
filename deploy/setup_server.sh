@@ -85,6 +85,7 @@ After=network.target
 User=www-data
 WorkingDirectory=$APP_DIR
 EnvironmentFile=$ENV_FILE
+Environment=HOME=$APP_DIR
 ExecStart=$APP_DIR/venv/bin/streamlit run ui/app.py --server.port 8501 --server.address 127.0.0.1 --server.headless true
 Restart=always
 RestartSec=5

@@ -74,14 +74,14 @@ Born: {birth_datetime}, {birth_place}
 
 LAGNA: {lagna} | Moon in {moon_sign} ({moon_nakshatra}, Pada {pada})
 
-CURRENT DASHA: {mahadasha} Mahadasha -> {antardasha} Antardasha
-  -> [Analysis: what these planets signify as house lords in this chart]
-  -> Period runs until: {antardasha_end}
-  -> Upcoming: {next_transition}
+CURRENT DASHA: {mahadasha} Mahadasha / {antardasha} Antardasha
+  - Analysis: what these planets signify as house lords in this chart
+  - Period runs until: {antardasha_end}
+  - Upcoming: {next_transition}
 
 KEY YOGAS:
-  * [Yoga name] -- [brief significance]
-  (!) [Borderline yoga] -- [what was confirmed/noted by astrologer]
+  - [Yoga name] -- [brief significance]
+  - (borderline) [Yoga name] -- [what was confirmed/noted by astrologer]
 
 {TOPIC} HOUSE ANALYSIS:
   [Relevant house + lord + planet placements for this topic]

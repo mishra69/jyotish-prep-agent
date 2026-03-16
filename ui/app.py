@@ -530,7 +530,7 @@ def _generate_pdf(chart: dict, brief: str, client_name: str, birth_info: str) ->
             pdf.set_font("Helvetica", "", 10)
         else:
             pdf.set_font("Helvetica", "", 10)
-            plain = re.sub(r"\*{1,3}(.*?)\*{1,3}", r"\1", stripped)
+            plain = re.sub(r"\*+", "", stripped)
             if plain:
                 pdf.multi_cell(epw, 5, _pdf_safe(plain))
 

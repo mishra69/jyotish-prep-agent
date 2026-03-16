@@ -39,16 +39,22 @@ or cleaned up when handing this project over to Pooja.
 
 ## Fresh deployment steps
 
+All config (OpenRouter key + GCP settings) lives in `.env`. Fill in `.env` first.
+
 ```bash
-# 1. Provision VM (fill in PROJECT_ID first)
+# 1. Fill in .env with GCP_PROJECT_ID, GCP_ZONE, GCP_VM_NAME, GCLOUD path, etc.
+#    (copy the GCP section from .env.example or HANDOVER.md if starting fresh)
+
+# 2. Provision VM
 bash deploy/setup_gcp.local.sh
 
-# 2. Copy .env to VM  (only OPENROUTER_API_KEY needed — no GCP key)
-gcloud compute scp .env jyotish-agent:/tmp/.env --zone=us-central1-a
+# 3. Copy .env to VM  (only OPENROUTER_API_KEY is used on the server)
+source .env
+$GCLOUD compute scp .env jyotish-agent:/tmp/.env --zone=$GCP_ZONE
 
-# 3. Copy and run server setup on VM
-gcloud compute scp deploy/setup_server.sh jyotish-agent:/tmp/ --zone=us-central1-a
-gcloud compute ssh jyotish-agent --zone=us-central1-a -- "bash /tmp/setup_server.sh"
+# 4. Copy and run server setup on VM
+$GCLOUD compute scp deploy/setup_server.sh jyotish-agent:/tmp/ --zone=$GCP_ZONE
+$GCLOUD compute ssh jyotish-agent --zone=$GCP_ZONE -- "bash /tmp/setup_server.sh"
 ```
 
 ## Known issues and fixes already baked in

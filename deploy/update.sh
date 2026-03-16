@@ -4,11 +4,17 @@
 
 set -e
 
-GCLOUD="$HOME/Downloads/google-cloud-sdk/bin/gcloud"
-VM_NAME="jyotish-agent"
-ZONE="us-central1-a"
+# Load config from .env
+ENV_FILE="$(dirname "$0")/../.env"
+if [ ! -f "$ENV_FILE" ]; then
+    echo "ERROR: .env not found at $ENV_FILE"
+    exit 1
+fi
+set -a; source "$ENV_FILE"; set +a
 
-export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.11
+VM_NAME="${GCP_VM_NAME}"
+ZONE="${GCP_ZONE}"
+export CLOUDSDK_PYTHON="${CLOUDSDK_PYTHON}"
 
 echo "Pulling latest code on VM..."
 $GCLOUD compute ssh "$VM_NAME" --zone="$ZONE" -- \

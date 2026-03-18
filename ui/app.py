@@ -313,7 +313,7 @@ def _sidebar():
         st.sidebar.caption(f"`{st.session_state['llm_model']}`")
 
     st.sidebar.divider()
-    if st.sidebar.button("↺  New Consultation", use_container_width=True):
+    if st.sidebar.button("↺  New Consultation"):
         clear_none = ["thread_id", "interrupt_data", "final_brief", "error",
                       "location_candidates", "location_selected"]
         clear_empty = ["intake_name", "intake_custom_topic", "intake_client_questions",
@@ -481,7 +481,7 @@ def _planet_rows(chart: dict) -> list[dict]:
 
 
 def _planet_table(chart: dict) -> None:
-    st.dataframe(_planet_rows(chart), use_container_width=True, hide_index=True)
+    st.dataframe(_planet_rows(chart), hide_index=True)
 
 
 def _yoga_list(yogas: list) -> None:
@@ -784,7 +784,7 @@ def show_intake():
             )
         with lc2:
             st.write("")   # vertical alignment nudge
-            search_clicked = st.button("Search", use_container_width=True, key="location_search_btn")
+            search_clicked = st.button("Search", key="location_search_btn")
 
         if search_clicked:
             if not location_query.strip():
@@ -820,7 +820,7 @@ def show_intake():
 
     st.divider()
 
-    submit = st.button("Compute Chart →", type="primary", use_container_width=True)
+    submit = st.button("Compute Chart →", type="primary")
 
     if submit:
         loc = st.session_state.get("location_selected")
@@ -921,8 +921,8 @@ def show_checkpoint_1():
             height=100,
         )
         col_a, col_b = st.columns([1, 3])
-        approved = col_a.form_submit_button("Approve & Synthesize →", type="primary", use_container_width=True)
-        _ = col_b.form_submit_button("Cancel", use_container_width=True)
+        approved = col_a.form_submit_button("Approve & Synthesize →", type="primary")
+        _ = col_b.form_submit_button("Cancel")
 
     if approved:
         st.session_state.completed_stages.append({
@@ -963,7 +963,7 @@ def show_ask_human():
             height=120,
             key=f"ask_human_answer_{abs(hash(question)) % 1_000_000}",
         )
-        submitted = st.form_submit_button("Submit Answer →", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("Submit Answer →", type="primary")
 
     if submitted:
         if not answer.strip():
@@ -1005,7 +1005,7 @@ def show_checkpoint_2():
     col_approve, col_revise = st.columns(2)
 
     with col_approve:
-        if st.button("Approve Final Brief ✓", type="primary", use_container_width=True):
+        if st.button("Approve Final Brief ✓", type="primary"):
             st.session_state.completed_stages.append({
                 "stage": "checkpoint_2",
                 "data": {"action": "approved", "draft": edited_draft},
@@ -1028,7 +1028,7 @@ def show_checkpoint_2():
                     placeholder="e.g. Add more detail on the 10th house. Remove the health section — not relevant today.",
                     height=100,
                 )
-                revise_btn = st.form_submit_button("Revise →", use_container_width=True)
+                revise_btn = st.form_submit_button("Revise →")
 
             if revise_btn:
                 if not feedback.strip():
@@ -1077,7 +1077,6 @@ def show_done():
         data=brief,
         file_name="consultation_brief.txt",
         mime="text/plain",
-        use_container_width=True,
     )
     if pdf_ok:
         col2.download_button(
@@ -1085,11 +1084,10 @@ def show_done():
             data=pdf_bytes,
             file_name="consultation_brief.pdf",
             mime="application/pdf",
-            use_container_width=True,
         )
     else:
         col2.error(f"PDF error: {pdf_err}")
-    if col3.button("Copy to clipboard (select all)", use_container_width=True):
+    if col3.button("Copy to clipboard (select all)"):
         st.info("Click inside the text area above and press Cmd+A / Ctrl+A to select all, then copy.")
 
 # ── Error screen ──────────────────────────────────────────────────────────────

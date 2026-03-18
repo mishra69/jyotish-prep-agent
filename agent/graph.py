@@ -249,16 +249,9 @@ def checkpoint_2_node(state: AgentState) -> dict:
     if not response.get("approved"):
         updates["checkpoint_2_feedback"] = response.get("feedback", "")
         updates["revision_count"] = (state.get("revision_count") or 0) + 1
-        # Append a HumanMessage with the feedback so the LLM sees it in context
-        updates["messages"] = [
-            HumanMessage(
-                content=(
-                    f"The astrologer reviewed your brief and requests changes:\n\n"
-                    f"{response.get('feedback', '')}\n\n"
-                    "Please revise the consultation brief accordingly."
-                )
-            )
-        ]
+        # Reset human_answers so the revision pass gets a fresh ask_human budget.
+        # build_synthesis_message embeds the revision request, so no HumanMessage needed here.
+        updates["human_answers"] = []
 
     return updates
 

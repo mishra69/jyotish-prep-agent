@@ -18,6 +18,31 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 load_dotenv()
 
+# ── GCS sync (Cloud Run) ──────────────────────────────────────────────────────
+
+import google.cloud.storage as _gcs
+
+_GCS_BUCKET = os.getenv("GCS_BUCKET", "")
+_GCS_OBJECT = "jyotish.db"
+_LOCAL_DB   = "/tmp/jyotish.db"
+
+
+def _gcs_download():
+    if not _GCS_BUCKET:
+        return
+    client = _gcs.Client()
+    blob = client.bucket(_GCS_BUCKET).blob(_GCS_OBJECT)
+    if blob.exists():
+        blob.download_to_filename(_LOCAL_DB)
+
+
+def _gcs_upload():
+    if not _GCS_BUCKET or not os.path.exists(_LOCAL_DB):
+        return
+    client = _gcs.Client()
+    client.bucket(_GCS_BUCKET).blob(_GCS_OBJECT).upload_from_filename(_LOCAL_DB)
+
+
 from astro.models import NAKSHATRAS, SIGN_LORDS
 from astro.yogas import EXALTATION, DEBILITATION, OWN_SIGNS, NATURAL_BENEFICS, NATURAL_MALEFICS
 from astro.dasha import NAKSHATRA_LORDS
@@ -34,8 +59,10 @@ st.set_page_config(
 
 @st.cache_resource
 def get_graph():
+    _gcs_download()
     from agent.graph import build_graph
-    return build_graph(os.path.join(os.path.dirname(__file__), "..", "jyotish.db"))
+    db_path = _LOCAL_DB if _GCS_BUCKET else os.path.join(os.path.dirname(__file__), "..", "jyotish.db")
+    return build_graph(db_path)
 
 # ── Session state init ────────────────────────────────────────────────────────
 
@@ -137,6 +164,9 @@ def _advance(input_data):
     except Exception as e:
         st.session_state.error = str(e)
         st.session_state.stage = "error"
+
+    finally:
+        _gcs_upload()
 
 
 def start_graph(initial_state: dict):

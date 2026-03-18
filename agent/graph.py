@@ -21,7 +21,8 @@ import logging
 import os
 from typing import Literal
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+_log_level = getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO)
+logging.basicConfig(level=_log_level, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger(__name__)
 
 from langchain_openai import ChatOpenAI
@@ -114,6 +115,10 @@ def llm_call_node(state: AgentState) -> dict:
         ] + messages
 
     log.info("llm_call_node: sending %d messages to LLM", len(messages))
+    if log.isEnabledFor(logging.DEBUG):
+        for i, m in enumerate(messages):
+            log.debug("llm_call_node: msg[%d] type=%s content=%s",
+                      i, type(m).__name__, getattr(m, "content", None))
     import time
 
     def _invoke(with_tools: bool):
@@ -129,6 +134,8 @@ def llm_call_node(state: AgentState) -> dict:
                      len(response.content) if response.content else 0,
                      [tc["name"] for tc in (response.tool_calls or [])],
                      use_tools)
+            log.debug("llm_call_node: response content=%s tool_calls=%s",
+                      response.content, response.tool_calls)
             return {"messages": [response]}
         except Exception as e:
             err = str(e)
@@ -174,6 +181,7 @@ def run_tools_node(state: AgentState) -> dict:
     tool_results = []
 
     for tc in last_msg.tool_calls:
+        log.debug("run_tools_node: tool=%s args=%s", tc["name"], tc["args"])
         tool_fn = tool_map.get(tc["name"])
         if tool_fn is None:
             result = f"Unknown tool: {tc['name']}"
@@ -185,6 +193,7 @@ def run_tools_node(state: AgentState) -> dict:
                 question = tc["args"].get("question", "")
                 human_answers = human_answers + [{"question": question, "answer": result}]
 
+        log.debug("run_tools_node: tool=%s result=%s", tc["name"], result)
         tool_results.append(
             ToolMessage(content=str(result), tool_call_id=tc["id"])
         )
@@ -231,6 +240,7 @@ def checkpoint_2_node(state: AgentState) -> dict:
             draft = text
             break
 
+    log.debug("checkpoint_2_node: draft=%s", draft)
     response = interrupt({
         "type": "checkpoint_2",
         "draft_brief": draft,

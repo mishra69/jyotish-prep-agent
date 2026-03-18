@@ -43,6 +43,12 @@ def _gcs_upload():
     client.bucket(_GCS_BUCKET).blob(_GCS_OBJECT).upload_from_filename(_LOCAL_DB)
 
 
+# Register SIGTERM handler at module level (main thread) so Cloud Run
+# eviction triggers a GCS sync. Must not be inside a cached function.
+import signal as _signal
+_signal.signal(_signal.SIGTERM, lambda s, f: _gcs_upload())
+
+
 from astro.models import NAKSHATRAS, SIGN_LORDS
 from astro.yogas import EXALTATION, DEBILITATION, OWN_SIGNS, NATURAL_BENEFICS, NATURAL_MALEFICS
 from astro.dasha import NAKSHATRA_LORDS
@@ -59,8 +65,6 @@ st.set_page_config(
 
 @st.cache_resource
 def get_graph():
-    import signal as _signal
-    _signal.signal(_signal.SIGTERM, lambda s, f: _gcs_upload())
     _gcs_download()
     from agent.graph import build_graph
     db_path = _LOCAL_DB if _GCS_BUCKET else os.path.join(os.path.dirname(__file__), "..", "jyotish.db")

@@ -136,6 +136,12 @@ def llm_call_node(state: AgentState) -> dict:
                 # Model can't handle tool calling — disable and retry immediately
                 log.warning("llm_call_node: tool calling failed (model may not support it), retrying without tools")
                 use_tools = False
+            elif "401" in err or "invalid api key" in err.lower() or "invalid_api_key" in err.lower() or "no auth" in err.lower():
+                log.error("llm_call_node: auth failure — %s", err)
+                raise RuntimeError(
+                    "OPENROUTER_AUTH_FAILED: Your OpenRouter API key is invalid or has expired. "
+                    "Generate a new key at openrouter.ai/keys and update OPENROUTER_API_KEY."
+                )
             elif "402" in err or "insufficient" in err.lower() or "billing" in err.lower() or "no credits" in err.lower():
                 log.error("llm_call_node: out of credits — %s", err)
                 raise RuntimeError(

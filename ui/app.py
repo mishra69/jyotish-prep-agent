@@ -1096,7 +1096,10 @@ def show_done():
 
 def show_error():
     err = st.session_state.error or "Unknown error"
-    if "OPENROUTER_OUT_OF_CREDITS" in err:
+    if "OPENROUTER_AUTH_FAILED" in err:
+        st.error("Your OpenRouter API key is invalid or has expired.")
+        st.info("Generate a new key at [openrouter.ai/keys](https://openrouter.ai/keys) and update `OPENROUTER_API_KEY` in your `.env`.")
+    elif "OPENROUTER_OUT_OF_CREDITS" in err:
         st.error("Your OpenRouter account has run out of credits.")
         st.info("Top up at [openrouter.ai/credits](https://openrouter.ai/credits) then start a new consultation.")
     else:

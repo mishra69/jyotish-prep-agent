@@ -59,6 +59,8 @@ st.set_page_config(
 
 @st.cache_resource
 def get_graph():
+    import signal as _signal
+    _signal.signal(_signal.SIGTERM, lambda s, f: _gcs_upload())
     _gcs_download()
     from agent.graph import build_graph
     db_path = _LOCAL_DB if _GCS_BUCKET else os.path.join(os.path.dirname(__file__), "..", "jyotish.db")
@@ -160,13 +162,11 @@ def _advance(input_data):
         final = (graph_state.values or {}).get("draft_brief", "")
         st.session_state.final_brief = final
         st.session_state.stage = "done"
+        _gcs_upload()  # sync once on consultation completion
 
     except Exception as e:
         st.session_state.error = str(e)
         st.session_state.stage = "error"
-
-    finally:
-        _gcs_upload()
 
 
 def start_graph(initial_state: dict):

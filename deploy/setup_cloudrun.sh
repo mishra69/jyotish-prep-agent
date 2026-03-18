@@ -13,6 +13,9 @@ source "$ROOT_DIR/.env"
 : "${GCP_REGION:?GCP_REGION not set in .env}"
 : "${OPENROUTER_API_KEY:?OPENROUTER_API_KEY not set in .env}"
 
+# Export so gcloud child processes pick up the right Python
+export CLOUDSDK_PYTHON
+
 GCLOUD="${GCLOUD:-gcloud}"
 IMAGE_REPO="$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/jyotish/jyotish-agent"
 SERVICE_NAME="jyotish-agent"
@@ -28,6 +31,7 @@ echo "--- Enabling required APIs..."
     run.googleapis.com \
     artifactregistry.googleapis.com \
     storage.googleapis.com \
+    cloudbuild.googleapis.com \
     --project="$GCP_PROJECT_ID"
 
 # ── 2. Create GCS bucket ──────────────────────────────────────────────────────
@@ -65,15 +69,12 @@ else
     echo "    Repo already exists."
 fi
 
-# ── 5. Configure Docker auth ──────────────────────────────────────────────────
-"$GCLOUD" auth configure-docker "$GCP_REGION-docker.pkg.dev" --quiet
-
-# ── 6. Build and push Docker image ────────────────────────────────────────────
-echo "--- Building Docker image..."
-docker build -t "$IMAGE_REPO:latest" "$ROOT_DIR"
-
-echo "--- Pushing Docker image..."
-docker push "$IMAGE_REPO:latest"
+# ── 5. Build and push Docker image via Cloud Build (no local Docker needed) ───
+echo "--- Building and pushing image via Cloud Build..."
+"$GCLOUD" builds submit "$ROOT_DIR" \
+    --tag="$IMAGE_REPO:latest" \
+    --project="$GCP_PROJECT_ID" \
+    --region="$GCP_REGION"
 
 # ── 7. Create service account ─────────────────────────────────────────────────
 echo "--- Setting up service account: $SA_EMAIL..."

@@ -11,19 +11,19 @@ source "$ROOT_DIR/.env"
 : "${GCP_PROJECT_ID:?GCP_PROJECT_ID not set in .env}"
 : "${GCP_REGION:?GCP_REGION not set in .env}"
 
+export CLOUDSDK_PYTHON
+
 GCLOUD="${GCLOUD:-gcloud}"
 IMAGE_REPO="$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/jyotish/jyotish-agent"
 SERVICE_NAME="jyotish-agent"
 
 echo "=== Redeploying $SERVICE_NAME to Cloud Run ==="
 
-"$GCLOUD" auth configure-docker "$GCP_REGION-docker.pkg.dev" --quiet
-
-echo "--- Building image..."
-docker build -t "$IMAGE_REPO:latest" "$ROOT_DIR"
-
-echo "--- Pushing image..."
-docker push "$IMAGE_REPO:latest"
+echo "--- Building and pushing image via Cloud Build..."
+"$GCLOUD" builds submit "$ROOT_DIR" \
+    --tag="$IMAGE_REPO:latest" \
+    --project="$GCP_PROJECT_ID" \
+    --region="$GCP_REGION"
 
 echo "--- Deploying new revision..."
 "$GCLOUD" run deploy "$SERVICE_NAME" \

@@ -184,12 +184,4 @@ def build_synthesis_message(state: dict[str, Any]) -> str:
         lines.append("")
         lines.append(f"ASTROLOGER CORRECTIONS/NOTES (from prep review):\n{corrections}")
 
-    if revision > 0 and feedback:
-        lines.append("")
-        lines.append(
-            f"REVISION REQUEST (revision #{revision}):\n"
-            f"The astrologer reviewed your previous draft and asked for changes:\n{feedback}\n"
-            f"Please revise the consultation brief accordingly."
-        )
-
     return "\n".join(lines)

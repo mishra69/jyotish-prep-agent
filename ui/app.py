@@ -4,10 +4,19 @@ Single-file app managing all 5 screens via session_state stage machine.
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import uuid
 from datetime import date
+
+# Configure logging FIRST — before any module that uses logging.getLogger()
+# (gcs_sync, agent.graph) so their log records are not silently dropped.
+logging.basicConfig(
+    level=getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO),
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+_log = logging.getLogger(__name__)
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -28,6 +37,11 @@ _gcs_upload   = _gcs_sync.upload
 # Sync to GCS on shutdown — Streamlit handles SIGTERM with sys.exit(),
 # which triggers atexit. Works from any thread unlike signal.signal().
 atexit.register(_gcs_sync.upload)
+
+# Upload after every interrupt/completion in _advance().
+# Atexit upload on SIGTERM is sufficient for most evictions; set
+# GCS_UPLOAD_EVERY_STEP=true to re-enable eager per-step uploads.
+_UPLOAD_EVERY_STEP = os.getenv("GCS_UPLOAD_EVERY_STEP", "false").lower() in ("1", "true", "yes")
 
 from astro.models import NAKSHATRAS, SIGN_LORDS
 from astro.yogas import EXALTATION, DEBILITATION, OWN_SIGNS, NATURAL_BENEFICS, NATURAL_MALEFICS
@@ -74,12 +88,31 @@ def _restore_from_url():
     if not t or st.session_state.thread_id:
         return  # Nothing to restore, or session already active
 
+    _log.info("_restore_from_url: attempting restore for t=%s", t)
     try:
         graph = get_graph()
         config = {"configurable": {"thread_id": t}}
         graph_state = graph.get_state(config)
 
+        _log.info(
+            "_restore_from_url: graph_state type=%s values_keys=%s next=%s tasks=%s",
+            type(graph_state).__name__,
+            list((graph_state.values or {}).keys()) if graph_state else None,
+            getattr(graph_state, "next", None),
+            [
+                {
+                    "name": getattr(task, "name", None),
+                    "interrupts": [
+                        getattr(i, "value", i)
+                        for i in (getattr(task, "interrupts", None) or [])
+                    ],
+                }
+                for task in (getattr(graph_state, "tasks", None) or [])
+            ] if graph_state else None,
+        )
+
         if not graph_state or not graph_state.values:
+            _log.warning("_restore_from_url: no values for t=%s — falling through to intake", t)
             return  # Thread not found in DB
 
         st.session_state.thread_id = t
@@ -95,6 +128,7 @@ def _restore_from_url():
 
         if idata:
             itype = idata.get("type") if isinstance(idata, dict) else ""
+            _log.info("_restore_from_url: found interrupt type=%s for t=%s", itype, t)
             st.session_state.interrupt_data = idata
             st.session_state.stage = {
                 "checkpoint_1": "checkpoint_1",
@@ -103,12 +137,18 @@ def _restore_from_url():
             }.get(itype, "error")
         elif not graph_state.next:
             # Graph ran to completion
+            _log.info("_restore_from_url: graph complete for t=%s — restoring done stage", t)
             st.session_state.stage = "done"
             st.session_state.final_brief = (graph_state.values or {}).get("draft_brief", "")
-        # else: graph mid-run (shouldn't happen) — leave as intake
+        else:
+            # Graph mid-run (paused inside a node, no interrupt registered yet)
+            _log.warning(
+                "_restore_from_url: t=%s has next=%s but no interrupt — cannot restore, falling through to intake",
+                t, graph_state.next,
+            )
 
-    except Exception:
-        pass  # Silently fall through to intake
+    except Exception as e:
+        _log.error("_restore_from_url failed for t=%s: %s", t, e, exc_info=True)
 
 
 _restore_from_url()
@@ -139,6 +179,8 @@ def _advance(input_data):
                         "ask_human": "ask_human",
                         "checkpoint_2": "checkpoint_2",
                     }.get(itype, "error")
+                    if _UPLOAD_EVERY_STEP:
+                        _gcs_upload()
                     return
 
         # Graph ran to completion
@@ -146,7 +188,8 @@ def _advance(input_data):
         final = (graph_state.values or {}).get("draft_brief", "")
         st.session_state.final_brief = final
         st.session_state.stage = "done"
-        _gcs_upload()  # sync once on consultation completion
+        if _UPLOAD_EVERY_STEP:
+            _gcs_upload()
 
     except Exception as e:
         st.session_state.error = str(e)

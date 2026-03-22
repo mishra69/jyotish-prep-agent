@@ -39,9 +39,10 @@ _gcs_upload   = _gcs_sync.upload
 atexit.register(_gcs_sync.upload)
 
 # Upload after every interrupt/completion in _advance().
-# Atexit upload on SIGTERM is sufficient for most evictions; set
-# GCS_UPLOAD_EVERY_STEP=true to re-enable eager per-step uploads.
-_UPLOAD_EVERY_STEP = os.getenv("GCS_UPLOAD_EVERY_STEP", "false").lower() in ("1", "true", "yes")
+# Per-step upload is the only reliable approach — atexit is bypassed by
+# Streamlit's SIGTERM handler (os._exit). Set GCS_UPLOAD_EVERY_STEP=false
+# to disable (not recommended; will lose sessions on container eviction).
+_UPLOAD_EVERY_STEP = os.getenv("GCS_UPLOAD_EVERY_STEP", "true").lower() not in ("0", "false", "no")
 
 from astro.models import NAKSHATRAS, SIGN_LORDS
 from astro.yogas import EXALTATION, DEBILITATION, OWN_SIGNS, NATURAL_BENEFICS, NATURAL_MALEFICS
@@ -180,7 +181,7 @@ def _advance(input_data):
                         "checkpoint_2": "checkpoint_2",
                     }.get(itype, "error")
                     if _UPLOAD_EVERY_STEP:
-                        _gcs_upload()
+                        _gcs_upload()  # WAL-checkpointed upload — safe to call here
                     return
 
         # Graph ran to completion
@@ -189,7 +190,7 @@ def _advance(input_data):
         st.session_state.final_brief = final
         st.session_state.stage = "done"
         if _UPLOAD_EVERY_STEP:
-            _gcs_upload()
+            _gcs_upload()  # WAL-checkpointed upload — safe to call here
 
     except Exception as e:
         st.session_state.error = str(e)

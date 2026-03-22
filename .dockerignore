@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+tests/output_test.pdf
+.git/
+.claude/

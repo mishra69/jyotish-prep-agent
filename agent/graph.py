@@ -255,7 +255,12 @@ def checkpoint_2_node(state: AgentState) -> dict:
     if not response.get("approved"):
         updates["checkpoint_2_feedback"] = response.get("feedback", "")
         updates["revision_count"] = (state.get("revision_count") or 0) + 1
-        # Append a HumanMessage with the feedback so the LLM sees it in context
+        # Reset human_answers so the revision pass gets a fresh ask_human budget.
+        updates["human_answers"] = []
+        # Append a HumanMessage so the LLM sees the revision request as the
+        # latest turn in the conversation (natural assistant-turn signal).
+        # build_synthesis_message does NOT duplicate this — it no longer embeds
+        # the revision text so it only appears once, here at the end.
         updates["messages"] = [
             HumanMessage(
                 content=(

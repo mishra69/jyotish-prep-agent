@@ -307,22 +307,26 @@ def _get_credit_status() -> dict | None:
 
 # OpenRouter model menu — label → model ID
 # Only models with reliable tool-calling support are included.
+# Slugs verified against https://openrouter.ai/api/v1/models on 2026-08-17.
+# All entries confirmed to support tool calling (required for ask_human).
+# When adding a model, check supported_parameters: if it lacks "temperature",
+# add it to NO_SAMPLING_PARAMS in agent/graph.py or calls will 400.
 OPENROUTER_MODELS = {
     # ── Anthropic ──────────────────────────────────────────────────────────────
-    "Claude Haiku 4.5  (fast · cheap)":        "anthropic/claude-haiku-4-5",
-    "Claude Sonnet 4.5  (balanced)":           "anthropic/claude-sonnet-4-5",
-    "Claude Opus 4.5  (most capable)":         "anthropic/claude-opus-4-5",
+    "Claude Opus 5  (recommended)":            "anthropic/claude-opus-5",
+    "Claude Fable 5  (most capable · $$)":     "anthropic/claude-fable-5",
+    "Claude Sonnet 5  (balanced)":             "anthropic/claude-sonnet-5",
+    "Claude Haiku 4.5  (fast · cheap)":        "anthropic/claude-haiku-4.5",
     # ── OpenAI ────────────────────────────────────────────────────────────────
-    "GPT-4o mini  (fast · cheap)":             "openai/gpt-4o-mini",
-    "GPT-4o  (balanced)":                      "openai/gpt-4o",
+    "GPT-5.5  (balanced)":                     "openai/gpt-5.5",
     # ── Google ────────────────────────────────────────────────────────────────
-    "Gemini 2.0 Flash  (fast · cheap)":        "google/gemini-2.0-flash-001",
-    "Gemini 1.5 Pro  (balanced)":              "google/gemini-pro-1.5",
-    # ── Meta / open-source ────────────────────────────────────────────────────
-    "Llama 3.3 70B  (open source · balanced)": "meta-llama/llama-3.3-70b-instruct",
-    "DeepSeek V3  (open source · cheap)":      "deepseek/deepseek-chat",
+    "Gemini 3.1 Pro  (balanced)":              "google/gemini-3.1-pro-preview",
+    # ── xAI ───────────────────────────────────────────────────────────────────
+    "Grok 4.6  (balanced)":                    "x-ai/grok-4.6",
+    # ── Open-source ───────────────────────────────────────────────────────────
+    "DeepSeek V4 Pro  (open source · cheap)":  "deepseek/deepseek-v4-pro",
 }
-_DEFAULT_MODEL_LABEL = "Claude Haiku 4.5  (fast · cheap)"
+_DEFAULT_MODEL_LABEL = "Claude Opus 5  (recommended)"
 
 
 def _sidebar():

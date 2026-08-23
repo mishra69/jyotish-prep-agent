@@ -39,6 +39,17 @@ MAX_REVISIONS = 5
 MAX_ASK_HUMAN = 2   # hard cap on ask_human calls per synthesis
 MAX_LLM_ITERATIONS = 6  # hard cap on llm_call → run_tools cycles
 
+DEFAULT_MODEL = "anthropic/claude-opus-5"
+
+# OpenRouter slugs that do not accept temperature/top_p/top_k. Verified against
+# https://openrouter.ai/api/v1/models (supported_parameters) on 2026-08-17.
+# Keep in sync with OPENROUTER_MODELS in ui/app.py when adding models.
+NO_SAMPLING_PARAMS = {
+    "anthropic/claude-fable-5",
+    "anthropic/claude-sonnet-5",
+    "openai/gpt-5.5",
+}
+
 
 # ── Node: compute ─────────────────────────────────────────────────────────────
 
@@ -91,16 +102,21 @@ def llm_call_node(state: AgentState) -> dict:
     Call Claude with current context. Handles both initial synthesis and revisions.
     The LLM may call ask_human if it encounters ambiguous patterns.
     """
-    model_name = state.get("llm_model") or os.getenv("OPENROUTER_MODEL", "anthropic/claude-haiku-4-5")
+    model_name = state.get("llm_model") or os.getenv("OPENROUTER_MODEL", DEFAULT_MODEL)
     api_key = os.getenv("OPENROUTER_API_KEY")
     log.info("llm_call_node: model=%s api_key_set=%s", model_name, bool(api_key))
 
+    # Reasoning models (Anthropic 4.6+, GPT-5.x) reject sampling params with a 400.
+    # That 400 would be misread as a tool-calling failure by the retry loop below,
+    # silently dropping tools — so omit temperature entirely for those models.
+    kwargs = {} if model_name in NO_SAMPLING_PARAMS else {"temperature": 0}
+
     llm = ChatOpenAI(
         model=model_name,
-        temperature=0,
         api_key=api_key,
         base_url="https://openrouter.ai/api/v1",
         request_timeout=90,
+        **kwargs,
     )
     llm_with_tools = llm.bind_tools(SYNTHESIS_TOOLS)
 

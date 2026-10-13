@@ -121,8 +121,9 @@ def generate_birth_chart(
     """
     subj = _kerykeion_subject(name, birth_date, birth_time, latitude, longitude, timezone)
 
-    # Ascendant
-    lagna_abs = subj.first_house.abs_pos
+    # Ascendant. Not first_house.abs_pos: with Whole Sign houses the 1st house
+    # cusp is always 0 deg of the lagna sign, which reported every lagna at 0.0.
+    lagna_abs = subj.ascendant.abs_pos
     lagna_sign = _SIGN_MAP.get(subj.first_house.sign, sign_from_abs_degree(lagna_abs))
     lagna_degree = lagna_abs % 30.0
 

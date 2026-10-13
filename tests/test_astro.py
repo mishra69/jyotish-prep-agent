@@ -63,6 +63,12 @@ def test_whole_sign_houses_sequential():
         actual_next = signs_in_order[(i + 1) % 12]
         assert expected_next == actual_next, f"House {i+1}→{i+2} sign sequence broken"
 
+def test_lagna_degree_is_the_ascendant_not_the_house_cusp():
+    # Regression: lagna_degree came from the Whole Sign 1st house cusp, which
+    # is 0 deg by definition, so every chart reported its lagna at 0.0.
+    # Reference value from kerykeion's ascendant for this chart.
+    assert abs(CHART.lagna_degree - 4.884) < 0.01, f"Expected ~4.884, got {CHART.lagna_degree}"
+
 def test_ketu_opposite_rahu():
     """Ketu must be exactly 180° from Rahu (we compute this ourselves)."""
     rahu = CHART.planets[Planet.RAHU.value].abs_degree

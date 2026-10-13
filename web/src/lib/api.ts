@@ -38,8 +38,10 @@ export function today(): string {
 export const api = {
   models: () => call<{ models: ModelOption[]; default: string }>('/api/models'),
   warmup: () => call<void>('/api/warmup', { method: 'POST' }).catch(() => {}),
+  remove: (id: string) => call<void>(`/api/consultations/${id}/remove`, { method: 'POST' }),
+  restore: (id: string) => call<void>(`/api/consultations/${id}/restore`, { method: 'POST' }),
   places: (q: string, signal?: AbortSignal) => call<Place[]>(`/api/places?q=${encodeURIComponent(q)}`, { signal }),
-  list: () => call<ConsultationSummary[]>('/api/consultations'),
+  list: (removed = false) => call<ConsultationSummary[]>(`/api/consultations${removed ? '?removed=1' : ''}`),
   get: (id: string) => call<ConsultationView>(`/api/consultations/${id}`),
   create: (intake: Intake, model: string) =>
     call<ConsultationView>('/api/consultations', { json: { intake, model, reference_date: today() } }),

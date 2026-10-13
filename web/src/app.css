@@ -92,6 +92,11 @@ th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: u
 .badge.borderline { background: var(--warn-soft); color: var(--warn); }
 .badge.not_formed { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
 
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.tag { font-size: 0.72rem; border-radius: 999px; padding: 0 8px; background: var(--accent-soft); color: var(--accent); }
+td.actions { text-align: right; white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 .brief { white-space: pre-wrap; font-family: var(--mono); font-size: 0.86rem; line-height: 1.55; }
 .question { font-size: 1.05rem; white-space: pre-wrap; }
 

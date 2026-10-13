@@ -101,6 +101,9 @@ export type ConsultationSummary = {
   stage: Stage;
   created_at: number;
   updated_at: number;
+  removed_at: number | null;
+  client_topics: string[];
+  custom_topic: string;
 };
 
 export type Place = { label: string; latitude: number; longitude: number };

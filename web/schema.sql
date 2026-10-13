@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS consultations (
   -- for. It expires on its own, so a request that dies mid-call cannot wedge
   -- the consultation.
   busy_until  INTEGER,                       -- unix ms, NULL when idle
+  -- Hidden from the list but kept, so a mis-tap can be undone. Added after
+  -- launch: existing databases need migrations/0001_removed_at.sql.
+  removed_at  INTEGER,                       -- unix ms, NULL when listed
   body        TEXT    NOT NULL
 );
 

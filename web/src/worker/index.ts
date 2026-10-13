@@ -135,7 +135,9 @@ async function handleApi(req: Request, env: Env, ctx: ExecutionContext, url: URL
 
   if (method === 'GET' && path === '/api/places') return searchPlaces(url.searchParams.get('q') ?? '', ctx);
 
-  if (method === 'GET' && path === '/api/consultations') return Response.json(await db.list(env.DB));
+  if (method === 'GET' && path === '/api/consultations') {
+    return Response.json(await db.list(env.DB, { removed: url.searchParams.get('removed') === '1' }));
+  }
 
   if (method === 'POST' && path === '/api/consultations') {
     const body = await readJson<{ intake?: unknown; model?: unknown; reference_date?: unknown }>(req);
@@ -174,6 +176,12 @@ async function handleApi(req: Request, env: Env, ctx: ExecutionContext, url: URL
   }
 
   if (method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+
+  if (action === 'remove' || action === 'restore') {
+    if (!(await db.setRemoved(env.DB, id, action === 'remove'))) throw new HttpError(404, 'Consultation not found.');
+    return new Response(null, { status: 204 });
+  }
+
   const llm = openRouterCaller(env.OPENROUTER_API_KEY);
 
   switch (action) {

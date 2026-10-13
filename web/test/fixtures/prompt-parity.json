@@ -1,0 +1,1134 @@
+{
+ "_note": "Generated from agent/prompts.py. Regenerate if the Python prompt changes.",
+ "api_response": {
+  "chart": {
+   "birth_datetime": "1990-03-15T14:32:00",
+   "latitude": 12.9716,
+   "longitude": 77.5946,
+   "timezone": "Asia/Kolkata",
+   "lagna": "Cancer",
+   "lagna_degree": 4.884275947861312,
+   "moon_sign": "Libra",
+   "moon_nakshatra": "Swati",
+   "moon_nakshatra_pada": 3,
+   "planets": {
+    "Sun": {
+     "planet": "Sun",
+     "sign": "Pisces",
+     "degree": 0.7930186655356692,
+     "abs_degree": 330.79301866553567,
+     "house": 9,
+     "nakshatra": "Purva Bhadrapada",
+     "nakshatra_pada": 4,
+     "retrograde": false
+    },
+    "Moon": {
+     "planet": "Moon",
+     "sign": "Libra",
+     "degree": 14.55090269363302,
+     "abs_degree": 194.55090269363302,
+     "house": 4,
+     "nakshatra": "Swati",
+     "nakshatra_pada": 3,
+     "retrograde": false
+    },
+    "Mars": {
+     "planet": "Mars",
+     "sign": "Capricorn",
+     "degree": 9.026133088195593,
+     "abs_degree": 279.0261330881956,
+     "house": 7,
+     "nakshatra": "Uttara Ashadha",
+     "nakshatra_pada": 4,
+     "retrograde": false
+    },
+    "Mercury": {
+     "planet": "Mercury",
+     "sign": "Aquarius",
+     "degree": 27.25799126316724,
+     "abs_degree": 327.25799126316724,
+     "house": 8,
+     "nakshatra": "Purva Bhadrapada",
+     "nakshatra_pada": 3,
+     "retrograde": false
+    },
+    "Jupiter": {
+     "planet": "Jupiter",
+     "sign": "Gemini",
+     "degree": 7.6481971123776304,
+     "abs_degree": 67.64819711237763,
+     "house": 12,
+     "nakshatra": "Ardra",
+     "nakshatra_pada": 1,
+     "retrograde": false
+    },
+    "Venus": {
+     "planet": "Venus",
+     "sign": "Capricorn",
+     "degree": 15.30769222866877,
+     "abs_degree": 285.30769222866877,
+     "house": 7,
+     "nakshatra": "Shravana",
+     "nakshatra_pada": 2,
+     "retrograde": false
+    },
+    "Saturn": {
+     "planet": "Saturn",
+     "sign": "Sagittarius",
+     "degree": 29.602691709889882,
+     "abs_degree": 269.6026917098899,
+     "house": 6,
+     "nakshatra": "Uttara Ashadha",
+     "nakshatra_pada": 1,
+     "retrograde": false
+    },
+    "Rahu": {
+     "planet": "Rahu",
+     "sign": "Capricorn",
+     "degree": 22.05216825291666,
+     "abs_degree": 292.05216825291666,
+     "house": 7,
+     "nakshatra": "Shravana",
+     "nakshatra_pada": 4,
+     "retrograde": true
+    },
+    "Ketu": {
+     "planet": "Ketu",
+     "sign": "Cancer",
+     "degree": 22.05216825291666,
+     "abs_degree": 112.05216825291666,
+     "house": 1,
+     "nakshatra": "Ashlesha",
+     "nakshatra_pada": 2,
+     "retrograde": true
+    }
+   },
+   "houses": {
+    "1": {
+     "number": 1,
+     "sign": "Cancer",
+     "lord": "Moon"
+    },
+    "2": {
+     "number": 2,
+     "sign": "Leo",
+     "lord": "Sun"
+    },
+    "3": {
+     "number": 3,
+     "sign": "Virgo",
+     "lord": "Mercury"
+    },
+    "4": {
+     "number": 4,
+     "sign": "Libra",
+     "lord": "Venus"
+    },
+    "5": {
+     "number": 5,
+     "sign": "Scorpio",
+     "lord": "Mars"
+    },
+    "6": {
+     "number": 6,
+     "sign": "Sagittarius",
+     "lord": "Jupiter"
+    },
+    "7": {
+     "number": 7,
+     "sign": "Capricorn",
+     "lord": "Saturn"
+    },
+    "8": {
+     "number": 8,
+     "sign": "Aquarius",
+     "lord": "Saturn"
+    },
+    "9": {
+     "number": 9,
+     "sign": "Pisces",
+     "lord": "Jupiter"
+    },
+    "10": {
+     "number": 10,
+     "sign": "Aries",
+     "lord": "Mars"
+    },
+    "11": {
+     "number": 11,
+     "sign": "Taurus",
+     "lord": "Venus"
+    },
+    "12": {
+     "number": 12,
+     "sign": "Gemini",
+     "lord": "Mercury"
+    }
+   }
+  },
+  "dasha": {
+   "current_mahadasha": {
+    "planet": "Saturn",
+    "start_date": "2013-07-23T11:41:44.759799",
+    "end_date": "2032-07-23T05:41:44.759799",
+    "level": 0,
+    "sub_dashas": [
+     {
+      "planet": "Saturn",
+      "start_date": "2013-07-23T11:41:44.759799",
+      "end_date": "2016-07-26T06:44:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Mercury",
+      "start_date": "2016-07-26T06:44:44.759799",
+      "end_date": "2019-04-05T09:53:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Ketu",
+      "start_date": "2019-04-05T09:53:44.759799",
+      "end_date": "2020-05-14T05:32:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Venus",
+      "start_date": "2020-05-14T05:32:44.759799",
+      "end_date": "2023-07-14T20:32:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Sun",
+      "start_date": "2023-07-14T20:32:44.759799",
+      "end_date": "2024-06-25T20:14:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Moon",
+      "start_date": "2024-06-25T20:14:44.759799",
+      "end_date": "2026-01-25T03:44:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Mars",
+      "start_date": "2026-01-25T03:44:44.759799",
+      "end_date": "2027-03-05T23:23:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Rahu",
+      "start_date": "2027-03-05T23:23:44.759799",
+      "end_date": "2030-01-09T22:29:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     },
+     {
+      "planet": "Jupiter",
+      "start_date": "2030-01-09T22:29:44.759799",
+      "end_date": "2032-07-23T05:41:44.759799",
+      "level": 1,
+      "sub_dashas": []
+     }
+    ]
+   },
+   "current_antardasha": {
+    "planet": "Sun",
+    "start_date": "2023-07-14T20:32:44.759799",
+    "end_date": "2024-06-25T20:14:44.759799",
+    "level": 1,
+    "sub_dashas": []
+   },
+   "next_transitions": [
+    {
+     "planet": "Moon",
+     "start_date": "2024-06-25T20:14:44.759799",
+     "end_date": "2026-01-25T03:44:44.759799",
+     "level": 1,
+     "sub_dashas": []
+    },
+    {
+     "planet": "Mars",
+     "start_date": "2026-01-25T03:44:44.759799",
+     "end_date": "2027-03-05T23:23:44.759799",
+     "level": 1,
+     "sub_dashas": []
+    },
+    {
+     "planet": "Rahu",
+     "start_date": "2027-03-05T23:23:44.759799",
+     "end_date": "2030-01-09T22:29:44.759799",
+     "level": 1,
+     "sub_dashas": []
+    }
+   ],
+   "mahadashas": [
+    {
+     "planet": "Rahu",
+     "start_date": "1990-03-15T14:32:00",
+     "end_date": "1997-07-23T11:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Rahu",
+       "start_date": "1990-03-15T14:32:00",
+       "end_date": "1992-11-25T18:44:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "1992-11-25T18:44:00",
+       "end_date": "1995-04-21T09:08:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "1995-04-21T09:08:00",
+       "end_date": "1998-02-25T08:14:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "1998-02-25T08:14:00",
+       "end_date": "2000-09-13T17:32:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2000-09-13T17:32:00",
+       "end_date": "2001-10-02T05:50:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2001-10-02T05:50:00",
+       "end_date": "2004-10-01T23:50:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2004-10-01T23:50:00",
+       "end_date": "2005-08-26T17:14:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2005-08-26T17:14:00",
+       "end_date": "2007-02-25T14:14:00",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2007-02-25T14:14:00",
+       "end_date": "1997-07-23T11:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Jupiter",
+     "start_date": "1997-07-23T11:41:44.759799",
+     "end_date": "2013-07-23T11:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Jupiter",
+       "start_date": "1997-07-23T11:41:44.759799",
+       "end_date": "1999-09-10T16:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "1999-09-10T16:29:44.759799",
+       "end_date": "2002-03-23T23:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2002-03-23T23:41:44.759799",
+       "end_date": "2004-06-28T21:17:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2004-06-28T21:17:44.759799",
+       "end_date": "2005-06-04T18:53:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2005-06-04T18:53:44.759799",
+       "end_date": "2008-02-03T18:53:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2008-02-03T18:53:44.759799",
+       "end_date": "2008-11-21T23:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2008-11-21T23:41:44.759799",
+       "end_date": "2010-03-23T23:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2010-03-23T23:41:44.759799",
+       "end_date": "2011-02-27T21:17:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2011-02-27T21:17:44.759799",
+       "end_date": "2013-07-23T11:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Saturn",
+     "start_date": "2013-07-23T11:41:44.759799",
+     "end_date": "2032-07-23T05:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Saturn",
+       "start_date": "2013-07-23T11:41:44.759799",
+       "end_date": "2016-07-26T06:44:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2016-07-26T06:44:44.759799",
+       "end_date": "2019-04-05T09:53:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2019-04-05T09:53:44.759799",
+       "end_date": "2020-05-14T05:32:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2020-05-14T05:32:44.759799",
+       "end_date": "2023-07-14T20:32:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2023-07-14T20:32:44.759799",
+       "end_date": "2024-06-25T20:14:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2024-06-25T20:14:44.759799",
+       "end_date": "2026-01-25T03:44:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2026-01-25T03:44:44.759799",
+       "end_date": "2027-03-05T23:23:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2027-03-05T23:23:44.759799",
+       "end_date": "2030-01-09T22:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2030-01-09T22:29:44.759799",
+       "end_date": "2032-07-23T05:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Mercury",
+     "start_date": "2032-07-23T05:41:44.759799",
+     "end_date": "2049-07-23T11:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Mercury",
+       "start_date": "2032-07-23T05:41:44.759799",
+       "end_date": "2034-12-19T21:08:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2034-12-19T21:08:44.759799",
+       "end_date": "2035-12-17T02:05:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2035-12-17T02:05:44.759799",
+       "end_date": "2038-10-16T23:05:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2038-10-16T23:05:44.759799",
+       "end_date": "2039-08-23T10:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2039-08-23T10:11:44.759799",
+       "end_date": "2041-01-21T20:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2041-01-21T20:41:44.759799",
+       "end_date": "2042-01-19T01:38:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2042-01-19T01:38:44.759799",
+       "end_date": "2044-08-07T10:56:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2044-08-07T10:56:44.759799",
+       "end_date": "2046-11-13T08:32:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2046-11-13T08:32:44.759799",
+       "end_date": "2049-07-23T11:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Ketu",
+     "start_date": "2049-07-23T11:41:44.759799",
+     "end_date": "2056-07-23T05:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Ketu",
+       "start_date": "2049-07-23T11:41:44.759799",
+       "end_date": "2049-12-19T15:08:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2049-12-19T15:08:44.759799",
+       "end_date": "2051-02-18T18:08:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2051-02-18T18:08:44.759799",
+       "end_date": "2051-06-26T14:14:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2051-06-26T14:14:44.759799",
+       "end_date": "2052-01-25T15:44:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2052-01-25T15:44:44.759799",
+       "end_date": "2052-06-22T19:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2052-06-22T19:11:44.759799",
+       "end_date": "2053-07-11T07:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2053-07-11T07:29:44.759799",
+       "end_date": "2054-06-17T05:05:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2054-06-17T05:05:44.759799",
+       "end_date": "2055-07-27T00:44:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2055-07-27T00:44:44.759799",
+       "end_date": "2056-07-23T05:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Venus",
+     "start_date": "2056-07-23T05:41:44.759799",
+     "end_date": "2076-07-23T05:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Venus",
+       "start_date": "2056-07-23T05:41:44.759799",
+       "end_date": "2059-11-22T17:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2059-11-22T17:41:44.759799",
+       "end_date": "2060-11-21T23:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2060-11-21T23:41:44.759799",
+       "end_date": "2062-07-23T17:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2062-07-23T17:41:44.759799",
+       "end_date": "2063-09-22T20:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2063-09-22T20:41:44.759799",
+       "end_date": "2066-09-22T14:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2066-09-22T14:41:44.759799",
+       "end_date": "2069-05-23T14:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2069-05-23T14:41:44.759799",
+       "end_date": "2072-07-23T05:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2072-07-23T05:41:44.759799",
+       "end_date": "2075-05-24T02:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2075-05-24T02:41:44.759799",
+       "end_date": "2076-07-23T05:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Sun",
+     "start_date": "2076-07-23T05:41:44.759799",
+     "end_date": "2082-07-23T17:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Sun",
+       "start_date": "2076-07-23T05:41:44.759799",
+       "end_date": "2076-11-09T19:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2076-11-09T19:29:44.759799",
+       "end_date": "2077-05-11T10:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2077-05-11T10:29:44.759799",
+       "end_date": "2077-09-16T06:35:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2077-09-16T06:35:44.759799",
+       "end_date": "2078-08-10T23:59:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2078-08-10T23:59:44.759799",
+       "end_date": "2079-05-30T04:47:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2079-05-30T04:47:44.759799",
+       "end_date": "2080-05-11T04:29:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2080-05-11T04:29:44.759799",
+       "end_date": "2081-03-17T15:35:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2081-03-17T15:35:44.759799",
+       "end_date": "2081-07-23T11:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2081-07-23T11:41:44.759799",
+       "end_date": "2082-07-23T17:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Moon",
+     "start_date": "2082-07-23T17:41:44.759799",
+     "end_date": "2092-07-23T05:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Moon",
+       "start_date": "2082-07-23T17:41:44.759799",
+       "end_date": "2083-05-24T02:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mars",
+       "start_date": "2083-05-24T02:41:44.759799",
+       "end_date": "2083-12-23T04:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2083-12-23T04:11:44.759799",
+       "end_date": "2085-06-23T01:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2085-06-23T01:11:44.759799",
+       "end_date": "2086-10-23T01:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2086-10-23T01:11:44.759799",
+       "end_date": "2088-05-23T08:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2088-05-23T08:41:44.759799",
+       "end_date": "2089-10-22T19:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2089-10-22T19:11:44.759799",
+       "end_date": "2090-05-23T20:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2090-05-23T20:41:44.759799",
+       "end_date": "2092-01-22T14:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2092-01-22T14:41:44.759799",
+       "end_date": "2092-07-23T05:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    },
+    {
+     "planet": "Mars",
+     "start_date": "2092-07-23T05:41:44.759799",
+     "end_date": "2099-07-23T23:41:44.759799",
+     "level": 0,
+     "sub_dashas": [
+      {
+       "planet": "Mars",
+       "start_date": "2092-07-23T05:41:44.759799",
+       "end_date": "2092-12-19T09:08:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Rahu",
+       "start_date": "2092-12-19T09:08:44.759799",
+       "end_date": "2094-01-06T21:26:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Jupiter",
+       "start_date": "2094-01-06T21:26:44.759799",
+       "end_date": "2094-12-13T19:02:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Saturn",
+       "start_date": "2094-12-13T19:02:44.759799",
+       "end_date": "2096-01-22T14:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Mercury",
+       "start_date": "2096-01-22T14:41:44.759799",
+       "end_date": "2097-01-18T19:38:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Ketu",
+       "start_date": "2097-01-18T19:38:44.759799",
+       "end_date": "2097-06-16T23:05:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Venus",
+       "start_date": "2097-06-16T23:05:44.759799",
+       "end_date": "2098-08-17T02:05:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Sun",
+       "start_date": "2098-08-17T02:05:44.759799",
+       "end_date": "2098-12-22T22:11:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      },
+      {
+       "planet": "Moon",
+       "start_date": "2098-12-22T22:11:44.759799",
+       "end_date": "2099-07-23T23:41:44.759799",
+       "level": 1,
+       "sub_dashas": []
+      }
+     ]
+    }
+   ]
+  },
+  "yogas": [
+   {
+    "name": "Gajakesari Yoga",
+    "sanskrit_name": "गजकेसरी योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Jupiter",
+     "Moon"
+    ],
+    "description": "Jupiter in an angular house from Moon — reputation, wisdom, good fortune.",
+    "formation_details": "Jupiter is in house 9 from Moon — not a kendra. Yoga not formed."
+   },
+   {
+    "name": "Budhaditya Yoga",
+    "sanskrit_name": "बुधादित्य योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Sun",
+     "Mercury"
+    ],
+    "description": "Sun and Mercury conjunct — intelligence, analytical talent, communication skills.",
+    "formation_details": "Sun in Pisces, Mercury in Aquarius — different signs."
+   },
+   {
+    "name": "Chandra-Mangala Yoga",
+    "sanskrit_name": "चंद्र-मंगल योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Moon",
+     "Mars"
+    ],
+    "description": "Moon and Mars conjunct — drive, financial acumen, dynamic emotions.",
+    "formation_details": "Moon in Libra, Mars in Capricorn."
+   },
+   {
+    "name": "Ruchaka Yoga (Pancha Mahapurusha)",
+    "sanskrit_name": "रुचक योग",
+    "confidence": "confirmed",
+    "planets_involved": [
+     "Mars"
+    ],
+    "description": "Ruchaka Yoga — courage, authority, physical vitality.",
+    "formation_details": "Mars in exaltation (Capricorn) in house 7 (kendra)."
+   },
+   {
+    "name": "Bhadra Yoga (Pancha Mahapurusha)",
+    "sanskrit_name": "भद्र योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Mercury"
+    ],
+    "description": "Bhadra Yoga — intellect, communication, business acumen.",
+    "formation_details": "Mercury in house 8 (Aquarius) — neither kendra nor own/exalted."
+   },
+   {
+    "name": "Hamsa Yoga (Pancha Mahapurusha)",
+    "sanskrit_name": "हंस योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Jupiter"
+    ],
+    "description": "Hamsa Yoga — wisdom, spirituality, prosperity.",
+    "formation_details": "Jupiter in house 12 (Gemini) — neither kendra nor own/exalted."
+   },
+   {
+    "name": "Malavya Yoga (Pancha Mahapurusha)",
+    "sanskrit_name": "मालव्य योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Venus"
+    ],
+    "description": "Malavya Yoga — beauty, luxury, artistic talent.",
+    "formation_details": "Venus in kendra (house 7) but not in own sign or exaltation."
+   },
+   {
+    "name": "Shasha Yoga (Pancha Mahapurusha)",
+    "sanskrit_name": "शश योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Saturn"
+    ],
+    "description": "Shasha Yoga — discipline, longevity, leadership.",
+    "formation_details": "Saturn in house 6 (Sagittarius) — neither kendra nor own/exalted."
+   },
+   {
+    "name": "Raja Yoga (Venus–Mars)",
+    "sanskrit_name": "राज योग",
+    "confidence": "confirmed",
+    "planets_involved": [
+     "Venus",
+     "Mars"
+    ],
+    "description": "Kendra lord (Venus) and trikona lord (Mars) conjunct — power, status, authority.",
+    "formation_details": "Lord of house 4 (Venus) conjunct lord of house 5 (Mars) in Capricorn."
+   },
+   {
+    "name": "Harsha Viparita Raja Yoga",
+    "sanskrit_name": "हर्ष विपरीत राज योग",
+    "confidence": "confirmed",
+    "planets_involved": [
+     "Jupiter"
+    ],
+    "description": "Harsha Viparita Raja Yoga — Strength through obstacles, victory over enemies.",
+    "formation_details": "Lord of house 6 (Jupiter) is in house 12 (a dusthana) — Harsha Viparita Raja Yoga formed."
+   },
+   {
+    "name": "Sarala Viparita Raja Yoga",
+    "sanskrit_name": "सरल विपरीत राज योग",
+    "confidence": "confirmed",
+    "planets_involved": [
+     "Saturn"
+    ],
+    "description": "Sarala Viparita Raja Yoga — Courage, longevity, freedom from fear.",
+    "formation_details": "Lord of house 8 (Saturn) is in house 6 (a dusthana) — Sarala Viparita Raja Yoga formed."
+   },
+   {
+    "name": "Vimala Viparita Raja Yoga",
+    "sanskrit_name": "विमल विपरीत राज योग",
+    "confidence": "confirmed",
+    "planets_involved": [
+     "Mercury"
+    ],
+    "description": "Vimala Viparita Raja Yoga — Purity, moksha, liberation from debt.",
+    "formation_details": "Lord of house 12 (Mercury) is in house 8 (a dusthana) — Vimala Viparita Raja Yoga formed."
+   },
+   {
+    "name": "Dhana Yoga",
+    "sanskrit_name": "धन योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Sun",
+     "Venus"
+    ],
+    "description": "Wealth yoga — lords of 2nd (accumulated wealth) and 11th (income) connected.",
+    "formation_details": "2nd lord (Sun) in house 9, 11th lord (Venus) in house 7 — no connection."
+   },
+   {
+    "name": "Adhi Yoga",
+    "sanskrit_name": "आधि योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Jupiter",
+     "Venus",
+     "Mercury"
+    ],
+    "description": "Natural benefics in angular positions from Moon — leadership, comfort, respected position.",
+    "formation_details": "Fewer than two natural benefics in 6th/7th/8th from Moon."
+   },
+   {
+    "name": "Kemadruma Yoga",
+    "sanskrit_name": "केमद्रुम योग",
+    "confidence": "borderline",
+    "planets_involved": [
+     "Moon"
+    ],
+    "description": "Moon isolated — potential for hardship, emotional difficulty, lack of support.",
+    "formation_details": "No planets in 2nd or 12th from Moon, but Moon is in a kendra — some texts say this cancels Kemadruma."
+   },
+   {
+    "name": "Saraswati Yoga",
+    "sanskrit_name": "सरस्वती योग",
+    "confidence": "not_formed",
+    "planets_involved": [
+     "Jupiter",
+     "Venus",
+     "Mercury"
+    ],
+    "description": "Wisdom, learning, creative intelligence — all three knowledge planets strong.",
+    "formation_details": "Jupiter, Venus, Mercury not sufficiently placed in kendras or trikonas."
+   }
+  ]
+ },
+ "system_prompt": "You are an expert Jyotish research assistant helping a practicing astrologer prepare for a client consultation.\n\nYour job is to analyze the provided birth chart data and generate a structured, astrologer-facing consultation brief — not a reading for the client directly. The astrologer will use this as preparation notes.\n\nIMPORTANT RULES:\n1. Flag patterns, do not assert interpretations. Write \"Jupiter as 9th lord in 10th suggests fortune through career\" NOT \"you will succeed in your career.\"\n2. Always show your reasoning: which house, which lord, which yoga.\n3. Call `ask_human` when you are uncertain — the astrologer is the expert. You are the research assistant.\n4. Borderline yogas MUST be flagged with ask_human before being included in the brief.\n5. PLAIN TEXT ONLY. This output will be converted directly to PDF using a basic Latin font. Use ONLY: letters (A-Z, a-z), numbers (0-9), spaces, hyphens (-), colons (:), parentheses (()), periods (.), commas (,), slashes (/), and the percent sign (%). Do NOT use: markdown (**, *, #, _, ~), arrows (->, =>, Unicode arrows), symbols (✦, ⚠, •, ●, ═, ✗), or any character outside standard ASCII. Section names in ALL CAPS. Bullet points use a plain hyphen (-).\n\nWHEN TO CALL ask_human (use sparingly — maximum 2 calls total):\nOnly call ask_human when you genuinely cannot proceed without the astrologer's input:\n- A yoga is explicitly marked as \"borderline\" confidence AND it materially changes the brief\n- The topic is health or legal AND the chart has directly contradictory indicators for that topic\n\nDO NOT call ask_human for:\n- General analysis questions you can reason through yourself\n- Confirmed yogas — just include them\n- Not-formed yogas — just exclude them\n- Standard house lord placements — analyse and state your reasoning\n\nHOW TO CALL ask_human:\nBe specific. One question per call. E.g.:\n  \"Kemadruma Yoga is borderline (Moon in kendra may cancel it). Should I include or exclude it from the career brief?\"\n\nOUTPUT FORMAT (use exactly this structure):\nCONSULTATION BRIEF\nClient: {name}  |  Topic: {topic}\nBorn: {birth_datetime}, {birth_place}\n\nLAGNA: {lagna} | Moon in {moon_sign} ({moon_nakshatra}, Pada {pada})\n\nCURRENT DASHA: {mahadasha} Mahadasha / {antardasha} Antardasha\n  - Analysis: what these planets signify as house lords in this chart\n  - Period runs until: {antardasha_end}\n  - Upcoming: {next_transition}\n\nKEY YOGAS:\n  - [Yoga name] -- [brief significance]\n  - (borderline) [Yoga name] -- [what was confirmed/noted by astrologer]\n\n{TOPIC} HOUSE ANALYSIS:\n  [Relevant house + lord + planet placements for this topic]\n\nFLAGGED ITEMS:\n  [Any ask_human questions and astrologer responses]\n\nSUGGESTED TALKING POINTS:\n  1. [Point 1]\n  2. [Point 2]\n  3. [Point 3]\n",
+ "cases": [
+  {
+   "intake": {
+    "client_name": "Priya S.",
+    "birth_date": "1990-03-15",
+    "birth_time": "14:32",
+    "birth_place": "Bangalore",
+    "client_topics": [
+     "career",
+     "marriage"
+    ],
+    "custom_topic": "startup vs job",
+    "client_questions": "Should I leave my job this year?\nWhen is a good time to marry?",
+    "checkpoint_1_corrections": "Client says birth time may be +/- 10 min."
+   },
+   "expected": "=== BIRTH CHART DATA ===\nClient: Priya S.\nBorn: 1990-03-15 14:32, Bangalore\nTopic: career, marriage (startup vs job)\n\nLagna (Ascendant): Cancer at 4.9°\nMoon: Libra (Swati, Pada 3)\n\nPLANETARY POSITIONS (Whole Sign houses, sidereal/Lahiri):\n  Sun        → Pisces          House  9  Purva Bhadrapada\n  Moon       → Libra           House  4  Swati\n  Mars       → Capricorn       House  7  Uttara Ashadha\n  Mercury    → Aquarius        House  8  Purva Bhadrapada\n  Jupiter    → Gemini          House 12  Ardra\n  Venus      → Capricorn       House  7  Shravana\n  Saturn     → Sagittarius     House  6  Uttara Ashadha\n  Rahu       → Capricorn       House  7  Shravana (R)\n  Ketu       → Cancer          House  1  Ashlesha (R)\n\nHOUSE LORDS:\n  House  1 (Cancer         ) — Lord: Moon\n  House  2 (Leo            ) — Lord: Sun\n  House  3 (Virgo          ) — Lord: Mercury\n  House  4 (Libra          ) — Lord: Venus\n  House  5 (Scorpio        ) — Lord: Mars\n  House  6 (Sagittarius    ) — Lord: Jupiter\n  House  7 (Capricorn      ) — Lord: Saturn\n  House  8 (Aquarius       ) — Lord: Saturn\n  House  9 (Pisces         ) — Lord: Jupiter\n  House 10 (Aries          ) — Lord: Mars\n  House 11 (Taurus         ) — Lord: Venus\n  House 12 (Gemini         ) — Lord: Mercury\n\nVIMSHOTTARI DASHA:\n  Mahadasha:  Saturn  (2013-07-23 → 2032-07-23)\n  Antardasha: Sun  (2023-07-14 → 2024-06-25)\n  Upcoming transitions:\n    Moon       2024-06-25 → 2026-01-25\n    Mars       2026-01-25 → 2027-03-05\n    Rahu       2027-03-05 → 2030-01-09\n\nYOGAS IDENTIFIED:\n  ✗ [not_formed] Gajakesari Yoga\n             Jupiter is in house 9 from Moon — not a kendra. Yoga not formed.\n  ✗ [not_formed] Budhaditya Yoga\n             Sun in Pisces, Mercury in Aquarius — different signs.\n  ✗ [not_formed] Chandra-Mangala Yoga\n             Moon in Libra, Mars in Capricorn.\n  ✦ [confirmed ] Ruchaka Yoga (Pancha Mahapurusha)\n             Mars in exaltation (Capricorn) in house 7 (kendra).\n  ✗ [not_formed] Bhadra Yoga (Pancha Mahapurusha)\n             Mercury in house 8 (Aquarius) — neither kendra nor own/exalted.\n  ✗ [not_formed] Hamsa Yoga (Pancha Mahapurusha)\n             Jupiter in house 12 (Gemini) — neither kendra nor own/exalted.\n  ✗ [not_formed] Malavya Yoga (Pancha Mahapurusha)\n             Venus in kendra (house 7) but not in own sign or exaltation.\n  ✗ [not_formed] Shasha Yoga (Pancha Mahapurusha)\n             Saturn in house 6 (Sagittarius) — neither kendra nor own/exalted.\n  ✦ [confirmed ] Raja Yoga (Venus–Mars)\n             Lord of house 4 (Venus) conjunct lord of house 5 (Mars) in Capricorn.\n  ✦ [confirmed ] Harsha Viparita Raja Yoga\n             Lord of house 6 (Jupiter) is in house 12 (a dusthana) — Harsha Viparita Raja Yoga formed.\n  ✦ [confirmed ] Sarala Viparita Raja Yoga\n             Lord of house 8 (Saturn) is in house 6 (a dusthana) — Sarala Viparita Raja Yoga formed.\n  ✦ [confirmed ] Vimala Viparita Raja Yoga\n             Lord of house 12 (Mercury) is in house 8 (a dusthana) — Vimala Viparita Raja Yoga formed.\n  ✗ [not_formed] Dhana Yoga\n             2nd lord (Sun) in house 9, 11th lord (Venus) in house 7 — no connection.\n  ✗ [not_formed] Adhi Yoga\n             Fewer than two natural benefics in 6th/7th/8th from Moon.\n  ⚠ [borderline] Kemadruma Yoga\n             No planets in 2nd or 12th from Moon, but Moon is in a kendra — some texts say this cancels Kemadruma.\n  ✗ [not_formed] Saraswati Yoga\n             Jupiter, Venus, Mercury not sufficiently placed in kendras or trikonas.\n\nTOPIC FOCUS — Career:\nPrioritize: 10th house & lord, Sun (authority), Saturn (discipline/work), planets in 10th. Dasha impact on career trajectory. Also check 2nd (income), 6th (service), 11th (gains).\n\nTOPIC FOCUS — Marriage:\nPrioritize: 7th house & lord, Venus (relationship), Jupiter (spouse for female charts), Mars (spouse for female charts), Moon (emotions/compatibility). Also check 2nd (family), 4th (happiness), 8th (longevity of union).\n\nCLIENT'S SPECIFIC QUESTIONS:\nShould I leave my job this year?\nWhen is a good time to marry?\n(Address these directly in the SUGGESTED TALKING POINTS section)\n\nASTROLOGER CORRECTIONS/NOTES (from prep review):\nClient says birth time may be +/- 10 min."
+  },
+  {
+   "intake": {
+    "client_name": "Priya S.",
+    "birth_date": "1990-03-15",
+    "birth_time": "14:32",
+    "birth_place": "Bangalore",
+    "client_topics": [],
+    "custom_topic": "",
+    "client_questions": "",
+    "checkpoint_1_corrections": ""
+   },
+   "expected": "=== BIRTH CHART DATA ===\nClient: Priya S.\nBorn: 1990-03-15 14:32, Bangalore\nTopic: general\n\nLagna (Ascendant): Cancer at 4.9°\nMoon: Libra (Swati, Pada 3)\n\nPLANETARY POSITIONS (Whole Sign houses, sidereal/Lahiri):\n  Sun        → Pisces          House  9  Purva Bhadrapada\n  Moon       → Libra           House  4  Swati\n  Mars       → Capricorn       House  7  Uttara Ashadha\n  Mercury    → Aquarius        House  8  Purva Bhadrapada\n  Jupiter    → Gemini          House 12  Ardra\n  Venus      → Capricorn       House  7  Shravana\n  Saturn     → Sagittarius     House  6  Uttara Ashadha\n  Rahu       → Capricorn       House  7  Shravana (R)\n  Ketu       → Cancer          House  1  Ashlesha (R)\n\nHOUSE LORDS:\n  House  1 (Cancer         ) — Lord: Moon\n  House  2 (Leo            ) — Lord: Sun\n  House  3 (Virgo          ) — Lord: Mercury\n  House  4 (Libra          ) — Lord: Venus\n  House  5 (Scorpio        ) — Lord: Mars\n  House  6 (Sagittarius    ) — Lord: Jupiter\n  House  7 (Capricorn      ) — Lord: Saturn\n  House  8 (Aquarius       ) — Lord: Saturn\n  House  9 (Pisces         ) — Lord: Jupiter\n  House 10 (Aries          ) — Lord: Mars\n  House 11 (Taurus         ) — Lord: Venus\n  House 12 (Gemini         ) — Lord: Mercury\n\nVIMSHOTTARI DASHA:\n  Mahadasha:  Saturn  (2013-07-23 → 2032-07-23)\n  Antardasha: Sun  (2023-07-14 → 2024-06-25)\n  Upcoming transitions:\n    Moon       2024-06-25 → 2026-01-25\n    Mars       2026-01-25 → 2027-03-05\n    Rahu       2027-03-05 → 2030-01-09\n\nYOGAS IDENTIFIED:\n  ✗ [not_formed] Gajakesari Yoga\n             Jupiter is in house 9 from Moon — not a kendra. Yoga not formed.\n  ✗ [not_formed] Budhaditya Yoga\n             Sun in Pisces, Mercury in Aquarius — different signs.\n  ✗ [not_formed] Chandra-Mangala Yoga\n             Moon in Libra, Mars in Capricorn.\n  ✦ [confirmed ] Ruchaka Yoga (Pancha Mahapurusha)\n             Mars in exaltation (Capricorn) in house 7 (kendra).\n  ✗ [not_formed] Bhadra Yoga (Pancha Mahapurusha)\n             Mercury in house 8 (Aquarius) — neither kendra nor own/exalted.\n  ✗ [not_formed] Hamsa Yoga (Pancha Mahapurusha)\n             Jupiter in house 12 (Gemini) — neither kendra nor own/exalted.\n  ✗ [not_formed] Malavya Yoga (Pancha Mahapurusha)\n             Venus in kendra (house 7) but not in own sign or exaltation.\n  ✗ [not_formed] Shasha Yoga (Pancha Mahapurusha)\n             Saturn in house 6 (Sagittarius) — neither kendra nor own/exalted.\n  ✦ [confirmed ] Raja Yoga (Venus–Mars)\n             Lord of house 4 (Venus) conjunct lord of house 5 (Mars) in Capricorn.\n  ✦ [confirmed ] Harsha Viparita Raja Yoga\n             Lord of house 6 (Jupiter) is in house 12 (a dusthana) — Harsha Viparita Raja Yoga formed.\n  ✦ [confirmed ] Sarala Viparita Raja Yoga\n             Lord of house 8 (Saturn) is in house 6 (a dusthana) — Sarala Viparita Raja Yoga formed.\n  ✦ [confirmed ] Vimala Viparita Raja Yoga\n             Lord of house 12 (Mercury) is in house 8 (a dusthana) — Vimala Viparita Raja Yoga formed.\n  ✗ [not_formed] Dhana Yoga\n             2nd lord (Sun) in house 9, 11th lord (Venus) in house 7 — no connection.\n  ✗ [not_formed] Adhi Yoga\n             Fewer than two natural benefics in 6th/7th/8th from Moon.\n  ⚠ [borderline] Kemadruma Yoga\n             No planets in 2nd or 12th from Moon, but Moon is in a kendra — some texts say this cancels Kemadruma.\n  ✗ [not_formed] Saraswati Yoga\n             Jupiter, Venus, Mercury not sufficiently placed in kendras or trikonas.\n\nTOPIC FOCUS — General Consultation:\nProvide a balanced overview. Lead with lagna (personality/life path), then current dasha period, then notable yogas. Let the astrologer guide the conversation toward specific topics."
+  },
+  {
+   "intake": {
+    "client_name": "Priya S.",
+    "birth_date": "1990-03-15",
+    "birth_time": "14:32",
+    "birth_place": "Bangalore",
+    "client_topics": [
+     "Health",
+     "health",
+     "unknown-topic"
+    ],
+    "custom_topic": "",
+    "client_questions": "",
+    "checkpoint_1_corrections": ""
+   },
+   "expected": "=== BIRTH CHART DATA ===\nClient: Priya S.\nBorn: 1990-03-15 14:32, Bangalore\nTopic: health, health, unknown-topic\n\nLagna (Ascendant): Cancer at 4.9°\nMoon: Libra (Swati, Pada 3)\n\nPLANETARY POSITIONS (Whole Sign houses, sidereal/Lahiri):\n  Sun        → Pisces          House  9  Purva Bhadrapada\n  Moon       → Libra           House  4  Swati\n  Mars       → Capricorn       House  7  Uttara Ashadha\n  Mercury    → Aquarius        House  8  Purva Bhadrapada\n  Jupiter    → Gemini          House 12  Ardra\n  Venus      → Capricorn       House  7  Shravana\n  Saturn     → Sagittarius     House  6  Uttara Ashadha\n  Rahu       → Capricorn       House  7  Shravana (R)\n  Ketu       → Cancer          House  1  Ashlesha (R)\n\nHOUSE LORDS:\n  House  1 (Cancer         ) — Lord: Moon\n  House  2 (Leo            ) — Lord: Sun\n  House  3 (Virgo          ) — Lord: Mercury\n  House  4 (Libra          ) — Lord: Venus\n  House  5 (Scorpio        ) — Lord: Mars\n  House  6 (Sagittarius    ) — Lord: Jupiter\n  House  7 (Capricorn      ) — Lord: Saturn\n  House  8 (Aquarius       ) — Lord: Saturn\n  House  9 (Pisces         ) — Lord: Jupiter\n  House 10 (Aries          ) — Lord: Mars\n  House 11 (Taurus         ) — Lord: Venus\n  House 12 (Gemini         ) — Lord: Mercury\n\nVIMSHOTTARI DASHA:\n  Mahadasha:  Saturn  (2013-07-23 → 2032-07-23)\n  Antardasha: Sun  (2023-07-14 → 2024-06-25)\n  Upcoming transitions:\n    Moon       2024-06-25 → 2026-01-25\n    Mars       2026-01-25 → 2027-03-05\n    Rahu       2027-03-05 → 2030-01-09\n\nYOGAS IDENTIFIED:\n  ✗ [not_formed] Gajakesari Yoga\n             Jupiter is in house 9 from Moon — not a kendra. Yoga not formed.\n  ✗ [not_formed] Budhaditya Yoga\n             Sun in Pisces, Mercury in Aquarius — different signs.\n  ✗ [not_formed] Chandra-Mangala Yoga\n             Moon in Libra, Mars in Capricorn.\n  ✦ [confirmed ] Ruchaka Yoga (Pancha Mahapurusha)\n             Mars in exaltation (Capricorn) in house 7 (kendra).\n  ✗ [not_formed] Bhadra Yoga (Pancha Mahapurusha)\n             Mercury in house 8 (Aquarius) — neither kendra nor own/exalted.\n  ✗ [not_formed] Hamsa Yoga (Pancha Mahapurusha)\n             Jupiter in house 12 (Gemini) — neither kendra nor own/exalted.\n  ✗ [not_formed] Malavya Yoga (Pancha Mahapurusha)\n             Venus in kendra (house 7) but not in own sign or exaltation.\n  ✗ [not_formed] Shasha Yoga (Pancha Mahapurusha)\n             Saturn in house 6 (Sagittarius) — neither kendra nor own/exalted.\n  ✦ [confirmed ] Raja Yoga (Venus–Mars)\n             Lord of house 4 (Venus) conjunct lord of house 5 (Mars) in Capricorn.\n  ✦ [confirmed ] Harsha Viparita Raja Yoga\n             Lord of house 6 (Jupiter) is in house 12 (a dusthana) — Harsha Viparita Raja Yoga formed.\n  ✦ [confirmed ] Sarala Viparita Raja Yoga\n             Lord of house 8 (Saturn) is in house 6 (a dusthana) — Sarala Viparita Raja Yoga formed.\n  ✦ [confirmed ] Vimala Viparita Raja Yoga\n             Lord of house 12 (Mercury) is in house 8 (a dusthana) — Vimala Viparita Raja Yoga formed.\n  ✗ [not_formed] Dhana Yoga\n             2nd lord (Sun) in house 9, 11th lord (Venus) in house 7 — no connection.\n  ✗ [not_formed] Adhi Yoga\n             Fewer than two natural benefics in 6th/7th/8th from Moon.\n  ⚠ [borderline] Kemadruma Yoga\n             No planets in 2nd or 12th from Moon, but Moon is in a kendra — some texts say this cancels Kemadruma.\n  ✗ [not_formed] Saraswati Yoga\n             Jupiter, Venus, Mercury not sufficiently placed in kendras or trikonas.\n\nTOPIC FOCUS — Health:\nPrioritize: 1st house & lagna lord (body/vitality), 6th house (illness), Saturn and Mars (chronic issues), 8th house (longevity). Note: Flag any health analysis for astrologer confirmation before sharing with client.\n\nTOPIC FOCUS — General Consultation:\nProvide a balanced overview. Lead with lagna (personality/life path), then current dasha period, then notable yogas. Let the astrologer guide the conversation toward specific topics."
+  }
+ ]
+}

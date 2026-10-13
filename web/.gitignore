@@ -1,0 +1,7 @@
+node_modules/
+dist/
+# Wrangler's local D1 and cache state
+.wrangler/
+# Local secrets for `wrangler dev` -- never commit
+.dev.vars
+.dev.vars.*

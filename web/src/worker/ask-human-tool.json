@@ -1,0 +1,18 @@
+{
+ "type": "function",
+ "function": {
+  "name": "ask_human",
+  "description": "Ask the astrologer a clarifying question when uncertain about a chart pattern.\n\nUse this when:\n- A yoga's formation is borderline or ambiguous\n- Two classical rules give contradictory readings\n- A planet is near a house cusp (within ~1°)\n- The topic involves sensitive areas (health, timing) where astrologer emphasis matters\n- Any configuration you find unusual\n\nAlways provide context: what you observe, what the ambiguity is.\n\nArgs:\n    question: The specific question for the astrologer, with chart context.\n\nReturns:\n    The astrologer's answer as a string.",
+  "parameters": {
+   "properties": {
+    "question": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "question"
+   ],
+   "type": "object"
+  }
+ }
+}

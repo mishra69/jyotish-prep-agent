@@ -25,7 +25,8 @@ export const MAX_REVISIONS = 5;
 /** Guard against a model that never stops calling tools within one request. */
 const MAX_LLM_CALLS_PER_STEP = 8;
 
-export type Stage = 'chart_review' | 'awaiting_answer' | 'draft_review' | 'final';
+export type { Stage } from '../lib/types';
+import type { Stage } from '../lib/types';
 
 /**
  * One tool call from the latest assistant turn. ask_human calls wait for the
@@ -92,6 +93,16 @@ export function conversationFor(c: Consultation): ChatMessage[] {
 
 const toolRounds = (c: Consultation) => c.messages.filter((m) => m.role === 'tool').length;
 
+/**
+ * The brief without the model's lead-in ("Now I'll prepare the brief: ---"),
+ * which would otherwise land at the top of the PDF. The system prompt's format
+ * starts at a CONSULTATION BRIEF line; without one, the text is kept whole.
+ */
+export function briefFrom(text: string): string {
+  const start = text.search(/^CONSULTATION BRIEF\b/m);
+  return start > 0 ? text.slice(start) : text;
+}
+
 function questionFrom(args: string): string {
   try {
     const q = (JSON.parse(args) as { question?: unknown }).question;
@@ -122,7 +133,7 @@ async function runModel(c0: Consultation, llm: LlmCaller): Promise<Consultation>
     if (calls_.length === 0) {
       const text = (reply.content ?? '').trim();
       if (!text) throw new FlowError(502, 'The model returned an empty response. Try again or pick another model.');
-      return { ...c, stage: 'draft_review', draft: text, brief_source: 'model' };
+      return { ...c, stage: 'draft_review', draft: briefFrom(text), brief_source: 'model' };
     }
 
     if (limitReached) {

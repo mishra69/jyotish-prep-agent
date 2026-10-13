@@ -6,6 +6,7 @@ import {
   MAX_REVISIONS,
   answerQuestion,
   approveChart,
+  briefFrom,
   currentQuestion,
   newConsultation,
   reviewDraft,
@@ -208,5 +209,22 @@ describe('guards', () => {
     const before = structuredClone(c0);
     await approveChart(c0, 'notes', script(ask('Q1')).llm);
     expect(c0).toEqual(before);
+  });
+});
+
+describe('brief extraction', () => {
+  it("drops the model's lead-in before the CONSULTATION BRIEF heading", () => {
+    expect(briefFrom("Now I'll prepare the consultation brief:\n\n---\n\nCONSULTATION BRIEF\nClient: X")).toBe('CONSULTATION BRIEF\nClient: X');
+  });
+  it('keeps the text whole when there is no heading', () => {
+    expect(briefFrom('Something else entirely')).toBe('Something else entirely');
+  });
+  it('only matches the heading at the start of a line', () => {
+    const t = 'Intro mentions CONSULTATION BRIEF mid-sentence.\nBody';
+    expect(briefFrom(t)).toBe(t);
+  });
+  it('is applied to drafts from the model', async () => {
+    const c = await approveChart(start(), '', script(say('Sure, here it is:\nCONSULTATION BRIEF\nX')).llm);
+    expect(c.draft).toBe('CONSULTATION BRIEF\nX');
   });
 });

@@ -75,3 +75,32 @@ export type Intake = {
   custom_topic: string;
   client_questions: string;
 };
+
+export type Stage = 'chart_review' | 'awaiting_answer' | 'draft_review' | 'final';
+
+/** What GET /api/consultations/:id returns (src/worker/index.ts:view). */
+export type ConsultationView = {
+  id: string;
+  stage: Stage;
+  intake: Intake;
+  astro: ChartApiResponse;
+  model: string;
+  corrections: string;
+  question: string | null;
+  questions_asked: number;
+  max_questions: number;
+  draft: string;
+  brief_source: 'model' | 'pasted' | null;
+  revision_count: number;
+  max_revisions: number;
+};
+
+export type ConsultationSummary = {
+  id: string;
+  client_name: string;
+  stage: Stage;
+  created_at: number;
+  updated_at: number;
+};
+
+export type Place = { label: string; latitude: number; longitude: number };

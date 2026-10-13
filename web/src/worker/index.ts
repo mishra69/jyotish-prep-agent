@@ -3,7 +3,7 @@
  * served from static assets (wrangler.jsonc: run_worker_first).
  */
 import { DEFAULT_MODEL, MODELS, findModel } from '../lib/models';
-import type { Intake } from '../lib/types';
+import type { ConsultationView, Intake } from '../lib/types';
 import { ChartApiError, fetchChart, warmChartApi } from './chart';
 import * as db from './db';
 import {
@@ -37,7 +37,7 @@ class HttpError extends Error {
 }
 
 /** What the UI sees. The raw message history stays server-side. */
-export function view(id: string, c: Consultation) {
+export function view(id: string, c: Consultation): ConsultationView {
   return {
     id,
     stage: c.stage,

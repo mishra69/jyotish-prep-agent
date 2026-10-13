@@ -39,12 +39,20 @@ MAX_REVISIONS = 5
 MAX_ASK_HUMAN = 2   # hard cap on ask_human calls per synthesis
 MAX_LLM_ITERATIONS = 6  # hard cap on llm_call → run_tools cycles
 
-DEFAULT_MODEL = "anthropic/claude-opus-5"
+DEFAULT_MODEL = "anthropic/claude-opus-5.5"
 
 # OpenRouter slugs that do not accept temperature/top_p/top_k. Verified against
-# https://openrouter.ai/api/v1/models (supported_parameters) on 2026-08-17.
-# Keep in sync with OPENROUTER_MODELS in ui/app.py when adding models.
+# https://openrouter.ai/api/v1/models (supported_parameters) on 2026-10-12.
+# Keep in sync with OPENROUTER_MODELS in ui/app.py when adding models. Retired
+# menu entries stay listed: saved consultations keep the model they started with.
 NO_SAMPLING_PARAMS = {
+    "anthropic/claude-opus-5.5",
+    "anthropic/claude-fable-5.1",
+    "anthropic/claude-sonnet-5.5",
+    "anthropic/claude-haiku-5.5",
+    "openai/gpt-6.1-sol",
+    # retired from the menu
+    "anthropic/claude-opus-5",
     "anthropic/claude-fable-5",
     "anthropic/claude-sonnet-5",
     "openai/gpt-5.5",

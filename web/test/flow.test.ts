@@ -60,7 +60,7 @@ function script(...replies: AssistantMessage[]) {
   return { llm, requests, remaining: () => replies.length };
 }
 
-const start = () => newConsultation(intake, astro, 'anthropic/claude-opus-5');
+const start = () => newConsultation(intake, astro, 'anthropic/claude-opus-5.5');
 
 async function expectFlowError(p: Promise<unknown>, status: number, text?: RegExp) {
   const e = await p.then(() => null, (err) => err);

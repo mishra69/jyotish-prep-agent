@@ -307,26 +307,27 @@ def _get_credit_status() -> dict | None:
 
 # OpenRouter model menu — label → model ID
 # Only models with reliable tool-calling support are included.
-# Slugs verified against https://openrouter.ai/api/v1/models on 2026-08-17.
+# Slugs verified against https://openrouter.ai/api/v1/models on 2026-10-12.
 # All entries confirmed to support tool calling (required for ask_human).
 # When adding a model, check supported_parameters: if it lacks "temperature",
 # add it to NO_SAMPLING_PARAMS in agent/graph.py or calls will 400.
+# Keep in sync with web/src/lib/models.ts.
 OPENROUTER_MODELS = {
     # ── Anthropic ──────────────────────────────────────────────────────────────
-    "Claude Opus 5  (recommended)":            "anthropic/claude-opus-5",
-    "Claude Fable 5  (most capable · $$)":     "anthropic/claude-fable-5",
-    "Claude Sonnet 5  (balanced)":             "anthropic/claude-sonnet-5",
-    "Claude Haiku 4.5  (fast · cheap)":        "anthropic/claude-haiku-4.5",
+    "Claude Opus 5.5  (recommended)":          "anthropic/claude-opus-5.5",
+    "Claude Fable 5.1  (most capable · $$)":   "anthropic/claude-fable-5.1",
+    "Claude Sonnet 5.5  (balanced)":           "anthropic/claude-sonnet-5.5",
+    "Claude Haiku 5.5  (fast · cheap)":        "anthropic/claude-haiku-5.5",
     # ── OpenAI ────────────────────────────────────────────────────────────────
-    "GPT-5.5  (balanced)":                     "openai/gpt-5.5",
+    "GPT-6.1 Sol  (balanced)":                 "openai/gpt-6.1-sol",
     # ── Google ────────────────────────────────────────────────────────────────
     "Gemini 3.1 Pro  (balanced)":              "google/gemini-3.1-pro-preview",
     # ── xAI ───────────────────────────────────────────────────────────────────
-    "Grok 4.6  (balanced)":                    "x-ai/grok-4.6",
+    "Grok 4.7  (balanced)":                    "x-ai/grok-4.7",
     # ── Open-source ───────────────────────────────────────────────────────────
     "DeepSeek V4 Pro  (open source · cheap)":  "deepseek/deepseek-v4-pro",
 }
-_DEFAULT_MODEL_LABEL = "Claude Opus 5  (recommended)"
+_DEFAULT_MODEL_LABEL = "Claude Opus 5.5  (recommended)"
 
 
 def _sidebar():

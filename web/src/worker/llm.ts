@@ -41,7 +41,7 @@ export function openRouterCaller(apiKey: string, sleep = (ms: number) => new Pro
     // Reasoning models reject sampling params with a 400. In the Python app that
     // 400 was misread as "no tool support" and tools were silently dropped; here
     // the param is simply omitted, and any 400 surfaces as an error.
-    const sampling = findModel(model)?.sampling ?? true;
+    const sampling = findModel(model)?.sampling ?? false;
     const body = JSON.stringify({
       model,
       messages,

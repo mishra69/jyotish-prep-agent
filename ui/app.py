@@ -313,19 +313,12 @@ def _get_credit_status() -> dict | None:
 # add it to NO_SAMPLING_PARAMS in agent/graph.py or calls will 400.
 # Keep in sync with web/src/lib/models.ts.
 OPENROUTER_MODELS = {
-    # ── Anthropic ──────────────────────────────────────────────────────────────
     "Claude Opus 5.5  (recommended)":          "anthropic/claude-opus-5.5",
     "Claude Fable 5.1  (most capable · $$)":   "anthropic/claude-fable-5.1",
-    "Claude Sonnet 5.5  (balanced)":           "anthropic/claude-sonnet-5.5",
     "Claude Haiku 5.5  (fast · cheap)":        "anthropic/claude-haiku-5.5",
-    # ── OpenAI ────────────────────────────────────────────────────────────────
-    "GPT-6.1 Sol  (balanced)":                 "openai/gpt-6.1-sol",
-    # ── Google ────────────────────────────────────────────────────────────────
-    "Gemini 3.1 Pro  (balanced)":              "google/gemini-3.1-pro-preview",
-    # ── xAI ───────────────────────────────────────────────────────────────────
-    "Grok 4.7  (balanced)":                    "x-ai/grok-4.7",
-    # ── Open-source ───────────────────────────────────────────────────────────
-    "DeepSeek V4 Pro  (open source · cheap)":  "deepseek/deepseek-v4-pro",
+    "GPT-6 Astra  ($$)":                       "openai/gpt-6-astra",
+    "Gemini 3.1 Pro":                          "google/gemini-3.1-pro-preview",
+    "Kimi K3  (open weights)":                 "moonshotai/kimi-k3",
 }
 _DEFAULT_MODEL_LABEL = "Claude Opus 5.5  (recommended)"
 

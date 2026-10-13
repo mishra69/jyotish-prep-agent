@@ -10,12 +10,10 @@ export type ModelOption = { id: string; label: string; sampling: boolean };
 export const MODELS: ModelOption[] = [
   { id: 'anthropic/claude-opus-5.5', label: 'Claude Opus 5.5 (recommended)', sampling: false },
   { id: 'anthropic/claude-fable-5.1', label: 'Claude Fable 5.1 (most capable, $$)', sampling: false },
-  { id: 'anthropic/claude-sonnet-5.5', label: 'Claude Sonnet 5.5 (balanced)', sampling: false },
   { id: 'anthropic/claude-haiku-5.5', label: 'Claude Haiku 5.5 (fast, cheap)', sampling: false },
-  { id: 'openai/gpt-6.1-sol', label: 'GPT-6.1 Sol (balanced)', sampling: false },
-  { id: 'google/gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro (balanced)', sampling: true },
-  { id: 'x-ai/grok-4.7', label: 'Grok 4.7 (balanced)', sampling: true },
-  { id: 'deepseek/deepseek-v4-pro', label: 'DeepSeek V4 Pro (open source, cheap)', sampling: true },
+  { id: 'openai/gpt-6-astra', label: 'GPT-6 Astra ($$)', sampling: false },
+  { id: 'google/gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro', sampling: true },
+  { id: 'moonshotai/kimi-k3', label: 'Kimi K3 (open weights)', sampling: true },
 ];
 
 export const DEFAULT_MODEL = MODELS[0].id;

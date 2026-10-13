@@ -48,14 +48,15 @@ DEFAULT_MODEL = "anthropic/claude-opus-5.5"
 NO_SAMPLING_PARAMS = {
     "anthropic/claude-opus-5.5",
     "anthropic/claude-fable-5.1",
-    "anthropic/claude-sonnet-5.5",
     "anthropic/claude-haiku-5.5",
-    "openai/gpt-6.1-sol",
+    "openai/gpt-6-astra",
     # retired from the menu
     "anthropic/claude-opus-5",
     "anthropic/claude-fable-5",
     "anthropic/claude-sonnet-5",
+    "anthropic/claude-sonnet-5.5",
     "openai/gpt-5.5",
+    "openai/gpt-6.1-sol",
 }
 
 

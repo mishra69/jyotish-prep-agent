@@ -130,8 +130,8 @@ class ChartApiTest(unittest.TestCase):
         with patch.dict(os.environ, {"API_KEY": ""}):
             self.assertEqual(self.post(BANGALORE).status_code, 503)
 
-    def test_healthz_needs_no_auth(self):
-        self.assertEqual(self.client.get("/healthz").status_code, 200)
+    def test_health_needs_no_auth(self):
+        self.assertEqual(self.client.get("/health").status_code, 200)
 
 
 if __name__ == "__main__":

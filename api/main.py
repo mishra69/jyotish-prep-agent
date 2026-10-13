@@ -4,7 +4,7 @@ Stateless chart API: birth data in, chart + dasha + yogas out.
 Wraps the astro/ package and nothing else -- no LLM, no storage, no client
 names. Deployed to Cloud Run; called by the Cloudflare Worker.
 
-Run locally:
+Run locally (health check is /health):
     API_KEY=dev venv/bin/uvicorn api.main:app --reload --port 8080
 """
 from __future__ import annotations
@@ -84,8 +84,9 @@ def resolve_timezone(req: ChartRequest) -> str:
     return tz
 
 
-@app.get("/healthz")
-def healthz() -> dict:
+# Not /healthz: Cloud Run reserves paths ending in "z" on run.app URLs.
+@app.get("/health")
+def health() -> dict:
     return {"ok": True}
 
 

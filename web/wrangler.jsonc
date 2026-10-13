@@ -17,8 +17,8 @@
     {
       "binding": "DB",
       "database_name": "jyotish-prep",
-      // Filled in by `wrangler d1 create jyotish-prep`. Local dev ignores it.
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      // From `wrangler d1 create`. Local dev uses .wrangler/ instead.
+      "database_id": "05943844-9737-40cd-94a2-acc1b5a361eb"
     }
   ],
 

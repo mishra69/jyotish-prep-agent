@@ -1,0 +1,6 @@
+# Chart API only -- deliberately excludes Streamlit, LangGraph, and GCS.
+# Versions match what tests/test_api.py was verified against.
+kerykeion==5.11.1
+timezonefinder==8.2.1
+fastapi==0.143.0
+uvicorn==0.54.0

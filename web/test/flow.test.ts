@@ -10,6 +10,7 @@ import {
   currentQuestion,
   newConsultation,
   reviewDraft,
+  timeline,
 } from '../src/worker/flow';
 import type { AssistantMessage, ChatMessage, LlmRequest } from '../src/worker/llm';
 import type { ChartApiResponse, Intake } from '../src/lib/types';
@@ -178,6 +179,44 @@ describe('revisions', () => {
   it(`refuses a revision beyond ${MAX_REVISIONS} instead of silently finalizing`, async () => {
     const c: Consultation = { ...start(), stage: 'draft_review', draft: 'D', revision_count: MAX_REVISIONS };
     await expectFlowError(reviewDraft(c, { approved: false, feedback: 'again' }, script().llm), 409, /limit/);
+  });
+});
+
+describe('timeline', () => {
+  it('is empty before any step is behind the astrologer', async () => {
+    expect(timeline(start())).toEqual([]);
+    const c = await approveChart(start(), '', script(say('DRAFT')).llm);
+    expect(timeline(c)).toEqual([]); // the draft under review is c.draft, not history
+  });
+
+  it('lists answers and sent-back drafts in order, without automatic tool results', async () => {
+    const mixed: AssistantMessage = {
+      role: 'assistant', content: null,
+      tool_calls: [...callTool('web_search').tool_calls!, ...ask('Q1').tool_calls!],
+    };
+    const m = script(mixed, say('Lead-in\nCONSULTATION BRIEF\nD1'), ask('Q2', 'Q3'), say('D2'));
+    let c = await approveChart(start(), '', m.llm);
+    c = await answerQuestion(c, 'A1', m.llm);
+    c = await reviewDraft(c, { approved: false, feedback: 'More on\n\nthe 10th lord.' }, m.llm);
+    c = await answerQuestion(c, 'A2', m.llm);
+    // Q3 still open: A2 shows up already.
+    expect(timeline(c)).toEqual([
+      { kind: 'qa', question: 'Q1', answer: 'A1' },
+      { kind: 'draft', draft: 'CONSULTATION BRIEF\nD1', feedback: 'More on\n\nthe 10th lord.' },
+      { kind: 'qa', question: 'Q2', answer: 'A2' },
+    ]);
+    c = await answerQuestion(c, 'A3', m.llm);
+    c = await reviewDraft(c, { approved: true }, m.llm);
+    expect(timeline(c).map((t) => t.kind)).toEqual(['qa', 'draft', 'qa', 'qa']);
+    expect(c.draft).toBe('D2');
+  });
+
+  it('leaves out questions the model asked past the limit', async () => {
+    const m = script(ask('Q1'), ask('Q2'), ask('Q3 despite the limit'), say('BRIEF'));
+    let c = await approveChart(start(), '', m.llm);
+    c = await answerQuestion(c, 'A1', m.llm);
+    c = await answerQuestion(c, 'A2', m.llm);
+    expect(timeline(c).map((t) => t.kind === 'qa' && t.question)).toEqual(['Q1', 'Q2']);
   });
 });
 

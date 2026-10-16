@@ -25,6 +25,10 @@ export const MAX_REVISIONS = 5;
 /** Guard against a model that never stops calling tools within one request. */
 const MAX_LLM_CALLS_PER_STEP = 8;
 
+const LIMIT_REACHED = 'Question limit reached. Proceed with your best judgment and write the brief.';
+const FEEDBACK_HEAD = 'The astrologer reviewed your brief and requests changes:\n\n';
+const FEEDBACK_TAIL = '\n\nPlease revise the consultation brief accordingly.';
+
 export type { Stage } from '../lib/types';
 import type { Stage } from '../lib/types';
 
@@ -54,6 +58,9 @@ export type Consultation = {
   /** Where the brief came from: this app's model, or pasted from an outside chatbot. */
   brief_source?: 'model' | 'pasted';
 };
+
+export type { TimelineEntry } from '../lib/types';
+import type { TimelineEntry } from '../lib/types';
 
 export class FlowError extends Error {
   constructor(readonly status: 400 | 409 | 502, message: string) {
@@ -144,7 +151,7 @@ async function runModel(c0: Consultation, llm: LlmCaller): Promise<Consultation>
       // unanswered: the draft was whatever text came earlier (possibly none),
       // and a later revision request would 400 on the dangling calls.
       for (const call of calls_) {
-        c.messages.push({ role: 'tool', tool_call_id: call.id, content: 'Question limit reached. Proceed with your best judgment and write the brief.' });
+        c.messages.push({ role: 'tool', tool_call_id: call.id, content: LIMIT_REACHED });
       }
       continue;
     }
@@ -168,6 +175,45 @@ const toolResults = (pending: PendingCall[]): ChatMessage[] =>
 
 /** The question the astrologer should answer next, if any. */
 export const currentQuestion = (c: Consultation) => c.pending.find((p) => p.answer === undefined);
+
+/**
+ * The steps already behind the astrologer, oldest first, for looking back:
+ * each question they answered, and each draft with the feedback that sent it
+ * back. Read from the stored conversation, so it needs no extra bookkeeping
+ * and works for consultations saved before it existed.
+ *
+ * The draft under review (or the final brief) is not here: it is `c.draft`.
+ */
+export function timeline(c: Consultation): TimelineEntry[] {
+  const out: TimelineEntry[] = [];
+  const questions = new Map<string, string>();
+  const msgs = c.messages;
+  for (let i = 0; i < msgs.length; i++) {
+    const m = msgs[i];
+    if (m.role === 'assistant') {
+      for (const call of m.tool_calls ?? []) {
+        if (call.function.name === 'ask_human') questions.set(call.id, questionFrom(call.function.arguments));
+      }
+      const text = (m.content ?? '').trim();
+      const next = msgs[i + 1];
+      // A draft is a tool-free reply. Only ones sent back are history; the
+      // last one is the current draft.
+      if (!m.tool_calls?.length && text && next?.role === 'user' && next.content.startsWith(FEEDBACK_HEAD)) {
+        const body = next.content.slice(FEEDBACK_HEAD.length);
+        const feedback = body.endsWith(FEEDBACK_TAIL) ? body.slice(0, -FEEDBACK_TAIL.length) : body;
+        out.push({ kind: 'draft', draft: briefFrom(text), feedback });
+      }
+    } else if (m.role === 'tool') {
+      const question = questions.get(m.tool_call_id);
+      if (question !== undefined && m.content !== LIMIT_REACHED) out.push({ kind: 'qa', question, answer: m.content });
+    }
+  }
+  // Answers to earlier questions in a turn that still has one open.
+  for (const p of c.pending) {
+    if (!p.automatic && p.answer !== undefined) out.push({ kind: 'qa', question: p.question, answer: p.answer });
+  }
+  return out;
+}
 
 export async function approveChart(c: Consultation, corrections: string, llm: LlmCaller): Promise<Consultation> {
   expectStage(c, 'chart_review');
@@ -214,10 +260,7 @@ export async function reviewDraft(
         ...c.messages,
         {
           role: 'user',
-          content:
-            'The astrologer reviewed your brief and requests changes:\n\n' +
-            `${feedback}\n\n` +
-            'Please revise the consultation brief accordingly.',
+          content: FEEDBACK_HEAD + feedback + FEEDBACK_TAIL,
         },
       ],
     },

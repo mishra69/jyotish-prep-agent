@@ -16,6 +16,10 @@
   let feedback = $state('');
   let revising = $state(false);
 
+  // Earlier steps stay viewable, read-only: the chart, and the questions and
+  // drafts already behind the astrologer. Acting happens on the current step.
+  let viewing = $state<'current' | 'chart' | 'history'>('current');
+
   $effect(() => {
     c = null;
     loadError = '';
@@ -32,6 +36,7 @@
       answer = '';
       feedback = '';
       revising = false;
+      viewing = 'current';
       scrollTo({ top: 0 });
     } catch (e) {
       error = (e as Error).message;
@@ -39,6 +44,20 @@
       working = '';
     }
   }
+
+  function show(v: typeof viewing) {
+    viewing = v;
+    scrollTo({ top: 0 });
+  }
+
+  const CURRENT_LABEL = { chart_review: 'Chart', awaiting_answer: 'Question', draft_review: 'Draft', final: 'Final brief' } as const;
+  const answered = $derived(c?.timeline.filter((t) => t.kind === 'qa').length ?? 0);
+  const sentBack = $derived(c?.timeline.filter((t) => t.kind === 'draft').length ?? 0);
+  const historyLabel = $derived(
+    [answered && `${answered} answer${answered === 1 ? '' : 's'}`, sentBack && `${sentBack} earlier draft${sentBack === 1 ? '' : 's'}`]
+      .filter(Boolean)
+      .join(', '),
+  );
 
   const intake = $derived(c?.intake);
   const topics = $derived(intake?.client_topics.length ? intake.client_topics.join(', ') : 'general');
@@ -60,6 +79,20 @@
 
   {#if error}<div class="error no-print">{error}</div>{/if}
 
+  {#if c.stage !== 'chart_review' && !working}
+    <nav class="steps no-print" aria-label="Steps">
+      <button type="button" aria-current={viewing === 'chart' ? 'step' : undefined} onclick={() => show('chart')}>Chart</button>
+      {#if c.timeline.length}
+        <button type="button" aria-current={viewing === 'history' ? 'step' : undefined} onclick={() => show('history')}>
+          Q&amp;A and revisions <span class="muted">({historyLabel})</span>
+        </button>
+      {/if}
+      <button type="button" aria-current={viewing === 'current' ? 'step' : undefined} onclick={() => show('current')}>
+        {CURRENT_LABEL[c.stage]}{c.stage === 'final' ? '' : ' (now)'}
+      </button>
+    </nav>
+  {/if}
+
   {#if working}
     <div class="card working no-print">
       <span class="spinner"></span>
@@ -68,6 +101,42 @@
         <div class="small muted">This usually takes 20–60 seconds. Keep this tab open.</div>
       </div>
     </div>
+
+  {:else if viewing === 'chart' && c.stage !== 'chart_review'}
+    <div class="card">
+      <h2 style="margin-top: 0">Chart</h2>
+      <ChartSummary astro={c.astro} />
+      {#if intake.client_questions.trim()}
+        <h3>Client's questions</h3>
+        <p class="question">{intake.client_questions}</p>
+      {/if}
+      <h3>Your notes for the brief</h3>
+      <p class={c.corrections ? 'question' : 'muted'}>{c.corrections || 'None.'}</p>
+    </div>
+    <button class="no-print" type="button" onclick={() => show('current')}>Back to {CURRENT_LABEL[c.stage].toLowerCase()} →</button>
+
+  {:else if viewing === 'history' && c.timeline.length}
+    {#each c.timeline as t, i (i)}
+      {#if t.kind === 'qa'}
+        <div class="card">
+          <p class="small muted" style="margin-bottom: 4px">The model asked</p>
+          <p class="question">{t.question}</p>
+          <p class="small muted" style="margin-bottom: 4px">You answered</p>
+          <p class="question" style="margin: 0">{t.answer}</p>
+        </div>
+      {:else}
+        <div class="card">
+          <details>
+            <summary><strong>Draft {c.timeline.slice(0, i + 1).filter((x) => x.kind === 'draft').length}</strong>
+              </summary>
+            <div class="brief" style="margin-top: 14px">{t.draft}</div>
+          </details>
+          <p class="small muted" style="margin: 12px 0 4px">You asked for changes</p>
+          <p class="question" style="margin: 0">{t.feedback}</p>
+        </div>
+      {/if}
+    {/each}
+    <button class="no-print" type="button" onclick={() => show('current')}>Back to {CURRENT_LABEL[c.stage].toLowerCase()} →</button>
 
   {:else if c.stage === 'chart_review'}
     <div class="card">

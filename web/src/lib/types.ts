@@ -78,6 +78,11 @@ export type Intake = {
 
 export type Stage = 'chart_review' | 'awaiting_answer' | 'draft_review' | 'final';
 
+/** A step already behind the astrologer (src/worker/flow.ts:timeline). */
+export type TimelineEntry =
+  | { kind: 'qa'; question: string; answer: string }
+  | { kind: 'draft'; draft: string; feedback: string };
+
 /** What GET /api/consultations/:id returns (src/worker/index.ts:view). */
 export type ConsultationView = {
   id: string;
@@ -93,6 +98,7 @@ export type ConsultationView = {
   brief_source: 'model' | 'pasted' | null;
   revision_count: number;
   max_revisions: number;
+  timeline: TimelineEntry[];
 };
 
 export type ConsultationSummary = {

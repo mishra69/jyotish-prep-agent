@@ -18,6 +18,7 @@ import {
   currentQuestion,
   newConsultation,
   reviewDraft,
+  timeline,
 } from './flow';
 import { LlmError, openRouterCaller } from './llm';
 import { searchPlaces } from './places';
@@ -52,6 +53,7 @@ export function view(id: string, c: Consultation): ConsultationView {
     brief_source: c.brief_source ?? null,
     revision_count: c.revision_count,
     max_revisions: MAX_REVISIONS,
+    timeline: timeline(c),
   };
 }
 
